@@ -1,45 +1,255 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Command-Line Tools &#8212; Spinal Cord Toolbox 3.2.2 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '3.2.2',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Python API" href="api.html" />
-    <link rel="prev" title="Support" href="support.html" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Command-Line Tools &mdash; Spinal Cord Toolbox 3.2.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Spinal Cord Toolbox 3.2.2 documentation" href="index.html"/>
+        <link rel="next" title="Python API" href="api.html"/>
+        <link rel="prev" title="Support" href="support.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
    
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  <div class="wy-grid-for-nav">
 
-  </head>
-  <body>
-  
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+          
+            <a href="index.html" class="icon icon-home"> Spinal Cord Toolbox
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">SCT Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Command-Line Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#summary-of-tools">Summary of Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#main-tools">Main Tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sct-analyze-lesion">sct_analyze_lesion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-analyze-texture">sct_analyze_texture</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-apply-transfo">sct_apply_transfo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-average-data-within-mask">sct_average_data_within_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-change-image-type">sct_change_image_type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-check-atlas-integrity">sct_check_atlas_integrity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-compute-ernst-angle">sct_compute_ernst_angle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-compute-hausdorff-distance">sct_compute_hausdorff_distance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-compute-mscc">sct_compute_mscc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-compute-mtr">sct_compute_mtr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-compute-snr">sct_compute_snr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-concat-transfo">sct_concat_transfo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-convert">sct_convert</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-create-mask">sct_create_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-crop-image">sct_crop_image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-deepseg-gm">sct_deepseg_gm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-deepseg-sc">sct_deepseg_sc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-denoising-onlm">sct_denoising_onlm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-detect-pmj">sct_detect_pmj</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-dice-coefficient">sct_dice_coefficient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-dmri-compute-bvalue">sct_dmri_compute_bvalue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-dmri-compute-dti">sct_dmri_compute_dti</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-dmri-concat-bvals">sct_dmri_concat_bvals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-dmri-concat-bvecs">sct_dmri_concat_bvecs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-dmri-create-noisemask">sct_dmri_create_noisemask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-dmri-display-bvecs">sct_dmri_display_bvecs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-dmri-eddy-correct">sct_dmri_eddy_correct</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-dmri-moco">sct_dmri_moco</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-dmri-separate-b0-and-dwi">sct_dmri_separate_b0_and_dwi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-dmri-transpose-bvecs">sct_dmri_transpose_bvecs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-download-data">sct_download_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-extract-metric">sct_extract_metric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-flatten-sagittal">sct_flatten_sagittal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-fmri-compute-tsnr">sct_fmri_compute_tsnr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-fmri-moco">sct_fmri_moco</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-get-centerline">sct_get_centerline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-image">sct_image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-invert-image">sct_invert_image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-label-utils">sct_label_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-label-vertebrae">sct_label_vertebrae</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-maths">sct_maths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-merge-images">sct_merge_images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-nifti-tool">sct_nifti_tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-pipeline">sct_pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-process-segmentation">sct_process_segmentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-propseg">sct_propseg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-register-graymatter">sct_register_graymatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-register-multimodal">sct_register_multimodal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-register-to-template">sct_register_to_template</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-resample">sct_resample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-segment-graymatter">sct_segment_graymatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-smooth-spinalcord">sct_smooth_spinalcord</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-straighten-spinalcord">sct_straighten_spinalcord</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-testing">sct_testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-utils">sct_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-viewer">sct_viewer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sct-warp-template">sct_warp_template</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#system-commands">System Commands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sct-check-dependencies">sct_check_dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#internal-commands">Internal Commands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#isct-check-detection">isct_check_detection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#isct-get-fractional-volume">isct_get_fractional_volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#isct-minc2volume-viewer">isct_minc2volume-viewer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#isct-test-ants">isct_test_ants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#isct-warpmovie-generator">isct_warpmovie_generator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#msct-base-classes">msct_base_classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#msct-gmseg-utils">msct_gmseg_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#msct-image">msct_image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#msct-moco">msct_moco</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#msct-multiatlas-seg">msct_multiatlas_seg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#msct-nurbs">msct_nurbs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#msct-parser">msct_parser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#msct-pca">msct_pca</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#msct-register">msct_register</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#msct-register-landmarks">msct_register_landmarks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#msct-shape">msct_shape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#msct-smooth">msct_smooth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#msct-types">msct_types</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development Notes</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Spinal Cord Toolbox</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Command-Line Tools</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/command-line.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <div class="section" id="command-line-tools">
 <span id="id1"></span><h1>Command-Line Tools<a class="headerlink" href="#command-line-tools" title="Permalink to this headline">¶</a></h1>
@@ -516,13 +726,7 @@ COMMAND LINE RELATED OPTIONAL ARGUMENTS
 </div>
 <div class="section" id="sct-deepseg-gm">
 <span id="id2"></span><h3>sct_deepseg_gm<a class="headerlink" href="#sct-deepseg-gm" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-text"><div class="highlight"><pre><span></span>WARNING: you&#39;re using a Keras backend different than
-Tensorflow, which is not recommended. Please verify
-your configuration file according to: https://keras.io/backend/
-to make sure you&#39;re using Tensorflow Keras backend.
-
-
-DESCRIPTION
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
 Spinal Cord Gray Matter (GM) Segmentation using deep dilated convolutions. Reference: CS Perone, E 
 Calabrese, J Cohen-Adad. Spinal cord gray matter segmentation using deep dilated convolutions 
 (2017). arxiv.org/abs/1710.01269
@@ -1305,6 +1509,11 @@ OPTIONAL ARGUMENTS
  -initc2                      Initialize by clicking on C2-C3 disc using interactive window.
  -initfile &lt;file&gt;             Initialize labeling by providing a text file which includes either 
                               -initz or -initcenter flag.
+ -initlabel &lt;file&gt;            Initialize vertebral labeling by providing a nifti file that has a 
+                              single disc label. An example of such file is a single voxel with 
+                              value &quot;3&quot;, which would be located at the posterior tip of C2-C3 disc. 
+                              Such label file can be created using: sct_label_utils -i IMAGE_REF 
+                              -create-viewer 3
  -ofolder &lt;folder_creation&gt;   Output folder.                
  -denoise {0,1}               Apply denoising filter to the data. Sometimes denoising is too 
                               aggressive, so use with care. Default value = 0
@@ -1331,15 +1540,6 @@ OPTIONAL ARGUMENTS
  -v {0,1,2}                   Verbose. 0: nothing. 1: basic. 2: extended. Default value = 1
  -h                           display this help             
  -qc &lt;folder_creation&gt;        The path where the quality control generated content will be saved
-</pre></div>
-</div>
-</div>
-<div class="section" id="sct-make-ground-truth">
-<h3>sct_make_ground_truth<a class="headerlink" href="#sct-make-ground-truth" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-text"><div class="highlight"><pre><span></span>  File &quot;../../../bin/sct_make_ground_truth&quot;, line 507
-    sct.run([&#39;sct_resample&#39;, &#39;-i&#39;, ftmp_seg, &#39;-o&#39;, add_suffix(ftmp_seg, &#39;_sub&#39;); &#39;-f&#39;, &#39;1x1x&#39;+zsubsample], verbose)
-                                                                               ^
-SyntaxError: invalid syntax
 </pre></div>
 </div>
 </div>
@@ -1469,11 +1669,10 @@ optional arguments:
 <div class="section" id="sct-pipeline">
 <h3>sct_pipeline<a class="headerlink" href="#sct-pipeline" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
-Run a specific SCT function in a list of subjects countained within a given folder. Multiple 
-parameters can be selected.
-  Exemple of command:
-  sct_pipeline -f sct_propseg -d /Users/julien/data/sct_test_function -p \&quot;-i t2/t2.nii.gz -c 
-    t2&quot;,&quot;-i t1/t1.nii.gz -c t1\&quot;
+Run a specific SCT function in a list of subjects contained within a given folder. Multiple 
+parameters can be selected by repeating the flag -p as shown in the example below:
+  sct_pipeline -f sct_propseg -d PATH_TO_DATA -p \&quot;-i t1/t1.nii.gz -c t1\&quot; -p \&quot;-i t2/t2.nii.gz -c 
+    t2\&quot;
 
 USAGE
 sct_pipeline -f &lt;str&gt; -d &lt;folder&gt;
@@ -1483,9 +1682,10 @@ MANDATORY ARGUMENTS
  -d &lt;folder&gt;                  Dataset directory.            
 
 OPTIONAL ARGUMENTS
- -p &lt;str&gt;                     Arguments to pass to the function that is tested. Please put 
-                              double-quotes if there are spaces in the list of parameters.
-                                Image paths must be contains in the arguments list.
+ -p &lt;str&gt;                     Arguments to pass to the function that is tested. Put double-quotes 
+                              if there are spaces in the list of parameters. Path to images are 
+                              relative to the subject&#39;s folder. Use multiple &#39;-p&#39; flags if you 
+                              would like to test different parameters on the samesubjects.
  -subj &lt;str&gt;                  Choose the subjects to process based on center, study, [...] to 
                               select the testing dataset
                                 Syntax:  field_1=val1,val2:field_2=val3:field_3=val4,val5
@@ -1494,8 +1694,15 @@ OPTIONAL ARGUMENTS
                               for an xls file located in the database folder. If no xls file is 
                               present, all subjects will be selected.
  -cpu-nb &lt;int&gt;                Number of CPU used for testing. 0: no multiprocessing. If not 
-                              provided, it uses all the available cores. Default value = 1
+                              provided, it uses all the available cores.
+ -test-integrity {0,1}        Run (=1) or not (=0) integrity testing which is defined in 
+                              test_integrity() function of the test_ script. See example here: 
+                              https://github.com/neuropoly/spinalcordtoolbox/blob/master/testin
+                              g/test_sct_propseg.py Default value = 0
+
+OUTPUT
  -log {0,1}                   Redirects Terminal verbose to log file. Default value = 1
+ -pickle {0,1}                Output Pickle file. Default value = 0
  -email &lt;list of: str&gt;        Email information to send results. Fields are assigned with &quot;=&quot; and 
                               are separated with &quot;,&quot;:
                                 email_to: address to send email to
@@ -1887,7 +2094,7 @@ OPTIONAL ARGUMENTS
  -param-straighten &lt;str&gt;      Parameters for straightening (see sct_straighten_spinalcord).
  -qc &lt;folder_creation&gt;        The path where the quality control generated content will be saved
  -igt &lt;image_nifti&gt;           File name of ground-truth template cord segmentation (binary nifti).
- -r {0,1}                     Remove temporary files. Default value = 1
+ -r {0,1}                     Remove temporary files. Default value = 0
  -v {0,1,2}                   Verbose. 0: nothing. 1: basic. 2: extended. Default value = 1
 </pre></div>
 </div>
@@ -2085,7 +2292,7 @@ OPTIONAL ARGUMENTS
 </div>
 <div class="section" id="sct-utils">
 <h3>sct_utils<a class="headerlink" href="#sct-utils" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-text"><div class="highlight"><pre><span></span>(&#39;git&#39;, u&#39;a4a70f88670ca6383acc85cc58e7455e0cc4cef8&#39;, u&#39;cJ-sphinx&#39;, u&#39;dev&#39;)
+<div class="highlight-text"><div class="highlight"><pre><span></span>(&#39;git&#39;, u&#39;8bc39bafb30c67e23cf5322a63587d9e65b7d398&#39;, u&#39;cJ-sphinx&#39;, u&#39;dev&#39;)
 </pre></div>
 </div>
 </div>
@@ -2178,34 +2385,6 @@ OPTIONAL ARGUMENTS
 </pre></div>
 </div>
 </div>
-<div class="section" id="isct-convert-binary-to-trilinear">
-<h3>isct_convert_binary_to_trilinear<a class="headerlink" href="#isct-convert-binary-to-trilinear" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-text"><div class="highlight"><pre><span></span>isct_convert_binary_to_trilinear
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Part of the Spinal Cord Toolbox &lt;https://sourceforge.net/projects/spinalcordtoolbox&gt;
-
-DESCRIPTION
-  Convert binary spinal cord segmentation to trilinear-interpolated segmentation. Instead of simply
-  re-interpolating the image, this function oversamples the binary mask, smoothes along centerline
-  (to remove step-effects), then downsamples back to native resolution.
-
-USAGE
-  isct_convert_binary_to_trilinear -i &lt;bin_seg&gt;
-
-MANDATORY ARGUMENTS
-  -i &lt;bin_seg&gt;      binary segmentation of spinal cord
-
-OPTIONAL ARGUMENTS
-  -s                sigma of the smoothing Gaussian kernel (in voxel). Default=5
-  -r {0,1}          remove temporary files. Default=1
-  -v {0,1}          verbose. Default=1
-  -h                help. Show this message
-
-EXAMPLE
-  isct_convert_binary_to_trilinear -i segmentation.nii
-</pre></div>
-</div>
-</div>
 <div class="section" id="isct-get-fractional-volume">
 <h3>isct_get_fractional_volume<a class="headerlink" href="#isct-get-fractional-volume" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-text"><div class="highlight"><pre><span></span>
@@ -2214,7 +2393,7 @@ EXAMPLE
 </div>
 <div class="section" id="isct-minc2volume-viewer">
 <h3>isct_minc2volume-viewer<a class="headerlink" href="#isct-minc2volume-viewer" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-text"><div class="highlight"><pre><span></span>usage: isct_minc2volume-viewer [-h] [-o FNAME_OUT] filename
+<div class="highlight-text"><div class="highlight"><pre><span></span>usage: isct_minc2volume-viewer.py [-h] [-o FNAME_OUT] filename
 
 positional arguments:
   filename              absolute path of input image
@@ -2228,7 +2407,7 @@ optional arguments:
 </div>
 <div class="section" id="isct-test-ants">
 <h3>isct_test_ants<a class="headerlink" href="#isct-test-ants" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-text"><div class="highlight"><pre><span></span>isct_test_ants
+<div class="highlight-text"><div class="highlight"><pre><span></span>isct_test_ants.py
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Part of the Spinal Cord Toolbox &lt;https://sourceforge.net/projects/spinalcordtoolbox&gt;
 
@@ -2236,7 +2415,7 @@ DESCRIPTION
   This function test the integrity of ANTs output, given that some versions of ANTs give a wrong BSpline   transform notably when using sct_ANTSUseLandmarkImagesToGetBSplineDisplacementField..
 
 USAGE
-  isct_test_ants
+  isct_test_ants.py
 
 OPTIONAL ARGUMENTS
   -h                         show this help
@@ -2280,17 +2459,7 @@ OPTIONAL ARGUMENTS
 </div>
 <div class="section" id="msct-image">
 <h3>msct_image<a class="headerlink" href="#msct-image" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
-Image processing functions
-
-USAGE
-msct_image -i &lt;file&gt;
-
-MANDATORY ARGUMENTS
- -i &lt;file&gt;                    Image input file.             
-
-OPTIONAL ARGUMENTS
- -o &lt;file_output&gt;             Image output name.
+<div class="highlight-text"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>
@@ -2402,82 +2571,76 @@ MISC
 </div>
 
 
+           </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="api.html" class="btn btn-neutral float-right" title="Python API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="support.html" class="btn btn-neutral" title="Support" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, SCT Contributors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<p class="logo">
-  <a href="index.html">
-    <img class="logo" src="_static/logo.png" alt="Logo"/>
-    
-  </a>
-</p>
+
+    </section>
+
+  </div>
+  
 
 
+  
 
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'3.2.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
+  
 
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
 
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=neuropoly&repo=spinalcordtoolbox&type=watch&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
 
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="concepts.html">SCT Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="support.html">Support</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Command-Line Tools</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="development.html">Development Notes</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="support.html" title="previous chapter">Support</a></li>
-      <li>Next: <a href="api.html" title="next chapter">Python API</a></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2018, SCT Contributors.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
-      |
-      <a href="_sources/command-line.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
-
-    
-
-    
-  </body>
+</body>
 </html>
