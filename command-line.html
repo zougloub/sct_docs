@@ -1,0 +1,2483 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Command-Line Tools &#8212; Spinal Cord Toolbox 3.2.2 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '3.2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Python API" href="api.html" />
+    <link rel="prev" title="Support" href="support.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="command-line-tools">
+<span id="id1"></span><h1>Command-Line Tools<a class="headerlink" href="#command-line-tools" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#summary-of-tools" id="id6">Summary of Tools</a></li>
+<li><a class="reference internal" href="#main-tools" id="id7">Main Tools</a></li>
+<li><a class="reference internal" href="#system-commands" id="id8">System Commands</a></li>
+<li><a class="reference internal" href="#internal-commands" id="id9">Internal Commands</a></li>
+</ul>
+</div>
+<div class="section" id="summary-of-tools">
+<h2><a class="toc-backref" href="#id6">Summary of Tools</a><a class="headerlink" href="#summary-of-tools" title="Permalink to this headline">¶</a></h2>
+<p>The command-line tools are named <cite>sct_*</cite>; to see all the commands
+available from SCT, start a new Terminal and type <cite>sct</cite> then press
+“tab”.</p>
+<p>Segmentation:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#sct-create-mask">sct_create_mask</a> - Create mask along z direction.</li>
+<li><a class="reference internal" href="#sct-label-vertebrae">sct_label_vertebrae</a> - Label vertebral levels</li>
+<li><a class="reference internal" href="#sct-propseg">sct_propseg</a> - Segment spinal cord using propagation of deformation model (PropSeg)</li>
+<li><a class="reference internal" href="#sct-process-segmentation">sct_process_segmentation</a> - Perform various types of processing from the spinal cord segmentation.</li>
+<li><a class="reference internal" href="#sct-segment-graymatter">sct_segment_graymatter</a> - Segment the white and gray matter on the cervical spinal cord (available in v2.1 and higher).</li>
+</ul>
+<p>Registration:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#sct-apply-transfo">sct_apply_transfo</a> - Apply transformations.</li>
+<li><a class="reference internal" href="#sct-concat-transfo">sct_concat_transfo</a> - Concatenate transformations.</li>
+<li><a class="reference internal" href="#sct-get-centerline">sct_get_centerline</a> - Reconstruct spinal cord centerline.</li>
+<li><a class="reference internal" href="#sct-register-multimodal">sct_register_multimodal</a> - Register two images together (non-linear, constrained in axial plane)</li>
+<li><a class="reference internal" href="#sct-register-to-template">sct_register_to_template</a> - Register the template to an anatomical image (t1, t2).</li>
+<li><a class="reference internal" href="#sct-smooth-spinalcord">sct_smooth_spinalcord</a> - Smooth the spinal cord along its centerline.</li>
+<li><a class="reference internal" href="#sct-straighten-spinalcord">sct_straighten_spinalcord</a> - Straighten spinal cord from centerline</li>
+<li><a class="reference internal" href="#sct-warp-template">sct_warp_template</a> - Warp all the spinal cord tracts of the atlas according to the warping field given as input.</li>
+</ul>
+<p>Metric processing:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#sct-average-data-within-mask">sct_average_data_within_mask</a> - Average data within a mask.</li>
+<li><a class="reference internal" href="#sct-extract-metric">sct_extract_metric</a> - Estimate metric value within tracts, taking into account partial volume effect.</li>
+</ul>
+<p>Diffusion MRI:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#sct-dmri-concat-bvals">sct_dmri_concat_bvals</a> - Concatenate bval files in time.</li>
+<li><a class="reference internal" href="#sct-dmri-concat-bvecs">sct_dmri_concat_bvecs</a> - Concatenate bvec files in time.</li>
+<li><a class="reference internal" href="#sct-dmri-moco">sct_dmri_moco</a> - Slice-wise motion correction of DWI data.</li>
+<li><a class="reference internal" href="#sct-dmri-separate-b0-and-dwi">sct_dmri_separate_b0_and_dwi</a> - Separate b=0 and DW images from diffusion dataset.</li>
+<li><a class="reference internal" href="#sct-dmri-transpose-bvecs">sct_dmri_transpose_bvecs</a> - Transpose bvecs file.</li>
+</ul>
+<p>Magnetization transfer:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#sct-compute-mtr">sct_compute_mtr</a> - Register image without (MTC0) and with magnetization transfer contrast (MTC1) and compute MTR</li>
+</ul>
+<p>Functional MRI:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#sct-fmri-compute-tsnr">sct_fmri_compute_tsnr</a> - Compute the temporal signal-to-noise ratio from fMRI nifti files.</li>
+<li><a class="reference internal" href="#sct-fmri-moco">sct_fmri_moco</a> - Correct fMRI data for motion.</li>
+</ul>
+<p>Miscellaneous:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#sct-check-dependencies">sct_check_dependencies</a> - Check installation and compatibility of SCT.</li>
+<li><a class="reference internal" href="#sct-testing">sct_testing</a> - Runs complete testing to make sure SCT is working properly.</li>
+<li><a class="reference internal" href="#sct-compute-ernst-angle">sct_compute_ernst_angle</a> - Compute Ernst angle.</li>
+<li><a class="reference internal" href="#sct-dice-coefficient">sct_dice_coefficient</a> - Compute 2D or 3D DICE coefficient between two binary images.</li>
+<li><a class="reference internal" href="#sct-flatten-sagittal">sct_flatten_sagittal</a> - Flatten the spinal cord in the sagittal plane (to make nice pictures).</li>
+<li><a href="#id10"><span class="problematic" id="id11">sct_flip_data_</span></a> - Flip data in a specified dimension (x,y,z or t). N.B. This script will NOT modify the header but the way the data are stored (so be careful!!)</li>
+<li><a class="reference internal" href="#sct-label-utils">sct_label_utils</a> - Utility function for label images.</li>
+<li><a class="reference internal" href="#sct-image">sct_image</a> - Performs various operations on images (split, pad, etc.).</li>
+<li><a class="reference internal" href="#sct-maths">sct_maths</a> - Performs mathematical operations on images (threshold, smooth, etc.).</li>
+<li><a class="reference internal" href="#sct-pipeline">sct_pipeline</a> - Runs one sct tool on many subjects in one command.</li>
+</ul>
+</div>
+<div class="section" id="main-tools">
+<h2><a class="toc-backref" href="#id7">Main Tools</a><a class="headerlink" href="#main-tools" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="sct-analyze-lesion">
+<h3>sct_analyze_lesion<a class="headerlink" href="#sct-analyze-lesion" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Compute statistics on lesions of the input binary file (1 for lesion, 0 for background). The 
+function assigns an ID value to each lesion (1, 2, 3, etc.) and outputs morphometric measures for 
+each lesion:
+  - volume [mm^3]
+  - length [mm]: length along the Superior-Inferior axis
+  - max_equivalent_diameter [mm]: maximum diameter of the lesion, when approximating the lesion as 
+    a circle in the axial cross-sectional plane orthogonal to the spinal cord
+  
+  If an image (e.g. T2w or T1w image, texture image) is provided, it computes the mean and standard 
+    deviation values of this image within each lesion.
+  
+  If a registered template is provided, it computes:
+  - the distribution of each lesion depending on each vertebral level and on each region of the 
+    template (eg GM, WM, WM tracts).
+  - the proportion of ROI (eg vertebral level, GM, WM) occupied by lesion.
+  N.B. If the proportion of lesion in each region (e.g., WM and GM) does not sum up to 100%, it 
+    means that the registered template does not fully cover the lesion, in that case you might want
+     to check the registration results.
+
+USAGE
+sct_analyze_lesion -m &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -m &lt;file&gt;                    Lesion mask to analyze        
+
+OPTIONAL ARGUMENTS
+ -s &lt;file&gt;                    Spinal cord centerline or segmentation file, which will be used to 
+                              correct morphometric measures with cord angle with respect to slice.
+ -i &lt;file&gt;                    Image from which to extract average values within lesions (e.g. T2w 
+                              or T1w image, texture image).
+ -f &lt;str&gt;                     Path to folder containing the atlas/template registered to the 
+                              anatomical image.
+ -ofolder &lt;folder_creation&gt;   Output folder                 
+ -r {0,1}                     Remove temporary files. Default value = 1
+ -v {0,1,2}                   Verbose: 0 = nothing, 1 = classic, 2 = expended Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-analyze-texture">
+<h3>sct_analyze_texture<a class="headerlink" href="#sct-analyze-texture" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Extraction of grey level co-occurence matrix (GLCM) texture features from an image within a given 
+mask. The textures features are those defined in the sckit-image implementation: 
+http://scikit-image.org/docs/dev/api/skimage.feature.html#greycoprops. This function outputs one 
+nifti file per texture metric (contrast,dissimilarity,homogeneity,energy,correlation,ASM) and per 
+orientation called fnameInput_feature_distance_angle.nii.gz. Also, a file averaging each metric 
+across the angles, called fnameInput_feature_distance_mean.nii.gz, is output.
+
+USAGE
+sct_analyze_texture -i &lt;file&gt; -m &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    Image to analyze.             
+ -m &lt;file&gt;                    Image mask (e.g., lesion, spinal cord).
+
+OPTIONAL ARGUMENTS
+ -feature &lt;str&gt;               List of GLCM texture features (separate arguments with &quot;,&quot;). Default 
+                              value = contrast,dissimilarity,homogeneity,energy,correlation,ASM
+ -distance &lt;int&gt;              Distance offset for GLCM computation, in pixel (suggested distance 
+                              values between 1 and 5). Default value = 1
+ -angle &lt;str&gt;                 List of angles for GLCM computation, separate arguments with &quot;,&quot;, in 
+                              degrees (suggested distance values between 0 and 179). Default value 
+                              = 0,45,90,135
+ -dim {ax,sag,cor}            Compute the texture on the axial (ax), sagittal (sag) or coronal 
+                              (cor) slices. Default value = ax
+ -ofolder &lt;folder_creation&gt;   Output folder. Default value = ./texture/
+ -igt &lt;image_nifti&gt;           File name of ground-truth texture metrics.
+ -r {0,1}                     Remove temporary files. Default value = 1
+ -v {0,1,2}                   Verbose: 0 = nothing, 1 = classic, 2 = expended. Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-apply-transfo">
+<h3>sct_apply_transfo<a class="headerlink" href="#sct-apply-transfo" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Apply transformations. This function is a wrapper for antsApplyTransforms (ANTs).
+
+USAGE
+sct_apply_transfo -i &lt;file&gt; -d &lt;file&gt; -w &lt;list of: file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    input image                   
+ -d &lt;file&gt;                    destination image             
+ -w &lt;list of: file&gt;           warping field                 
+
+OPTIONAL ARGUMENTS
+ -crop {0,1,2}                Crop Reference. 0 : no reference. 1 : sets background to 0. 2 : use 
+                              normal background Default value = 0
+ -o &lt;file_output&gt;             registered source.            
+ -x {nn,linear,spline}        interpolation method Default value = spline
+ -r {0,1}                     Remove temporary files. Default value = 1
+ -v {0,1,2}                   Verbose. Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-average-data-within-mask">
+<h3>sct_average_data_within_mask<a class="headerlink" href="#sct-average-data-within-mask" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Average data within mask. Compute a weighted average if mask is non-binary (values distributed 
+between 0 and 1).
+
+USAGE
+sct_average_data_within_mask -i &lt;file&gt; -m &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    Image to extract values from  
+ -m &lt;file&gt;                    Binary or weighted mask (values between 0 and 1).
+
+OPTIONAL ARGUMENTS
+ -nvol &lt;int&gt;                  Volume number (if mask is 4D).
+ -z &lt;int&gt;                     Slice number to compute average on (other slices will not be 
+                              considered).
+ -v {0,1,2}                   verbose: 0 = nothing, 1 = classic, 2 = expended Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-change-image-type">
+<h3>sct_change_image_type<a class="headerlink" href="#sct-change-image-type" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>sct_change_image_type
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Part of the Spinal Cord Toolbox &lt;https://sourceforge.net/projects/spinalcordtoolbox&gt;
+
+DESCRIPTION
+  Change the type of voxel in the image
+
+USAGE
+  sct_change_image_type -i &lt;data&gt; -o &lt;outputname&gt; -t &lt;type&gt;
+
+MANDATORY ARGUMENTS
+  -i &lt;data&gt;         input image name
+  -o &lt;filename&gt;     output image name
+
+OPTIONAL ARGUMENTS
+  -t &lt;type&gt;         type of output image. default: int32
+                    Available:  int8, int16, int32, int64,
+                                uint8, uint16, uint32, uint64,
+                                float16, float32, float64
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-check-atlas-integrity">
+<h3>sct_check_atlas_integrity<a class="headerlink" href="#sct-check-atlas-integrity" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Check the integrity of the warped atlas by (i) evaluating the number of tracts that disappeared 
+given a threshold, (ii) evaluating the number of voxels outside the spinal cord segmentation and 
+(iii) evaluating the overlap between the white matter tracts and the gray matter.
+
+USAGE
+sct_check_atlas_integrit -i &lt;folder&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;folder&gt;                  Atlas folder path.            
+
+OPTIONAL ARGUMENTS
+ -s &lt;file&gt;                    Segmentation of the cord.     
+ -gm &lt;file&gt;                   Segmentation of the Gray matter
+ -thr &lt;float&gt;                 Atlas threshold, between 0 and 1.
+ -thrgm &lt;float&gt;               Gray matter image threshold, between 0 and 1.
+ -v {0,1,2}                   verbose: 0 = nothing, 1 = classic, 2 = expended Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-compute-ernst-angle">
+<h3>sct_compute_ernst_angle<a class="headerlink" href="#sct-compute-ernst-angle" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Function to compute the Ernst Angle. For examples of T1 values in the brain, see Wansapura et al. 
+NMR relaxation times in the human brain at 3.0 tesla. Journal of magnetic resonance imaging : JMRI 
+(1999) vol. 9 (4) pp. 531-8. 
+  T1 in WM: 832ms
+  T1 in GM: 1331ms
+
+USAGE
+sct_compute_ernst_angle -tr &lt;float&gt;
+
+MANDATORY ARGUMENTS
+ -tr &lt;float&gt;                  Value of TR (in ms) to get the Ernst Angle. 
+
+OPTIONAL ARGUMENTS
+ -t1 &lt;float&gt;                  T1 value (in ms). Default value = 832.0
+ -b &lt;list of: float&gt;          Boundaries TR parameter (in ms) in case -v 2 is used.
+ -o &lt;file_output&gt;             Name of the output file containing Ernst angle result. Default value 
+                              = ernst_angle.txt
+ -ofig &lt;file_output&gt;          Name of the output graph (only if -v 2 is used). Default value = 
+                              ernst_angle.png
+ -v {0,1,2}                   verbose: 0 = nothing, 1 = classic, 2 = expended (graph) Default value 
+                              = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-compute-hausdorff-distance">
+<h3>sct_compute_hausdorff_distance<a class="headerlink" href="#sct-compute-hausdorff-distance" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Compute the Hausdorff&#39;s distance between two binary images which can be thinned (ie skeletonized)If 
+only one image is inputted, it will be only thinned
+
+USAGE
+sct_compute_hausdorff_distance -i &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    First Image on which you want to find the skeleton
+
+OPTIONAL ARGUMENTS
+ -d &lt;file&gt;                    Second Image on which you want to find the skeleton
+ -thinning {0,1}              Thinning : find the skeleton of the binary images using the 
+                              Zhang-Suen algorithm (1984) and use it to compute the hausdorff&#39;s 
+                              distance Default value = 1
+ -resampling &lt;float&gt;          pixel size in mm to resample to Default value = 0.1
+ -o &lt;file_output&gt;             Name of the output file Default value = hausdorff_distance.txt
+ -v &lt;int&gt;                     verbose: 0 = nothing, 1 = classic, 2 = expended
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-compute-mscc">
+<h3>sct_compute_mscc<a class="headerlink" href="#sct-compute-mscc" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Compute Maximum Spinal Cord Compression (MSCC) as in: Miyanji F, Furlan JC, Aarabi B, Arnold PM, 
+Fehlings MG. Acute cervical traumatic spinal cord injury: MR imaging findings correlated with 
+neurologic outcome--prospective study with 100 consecutive patients. Radiology 2007;243(3):820-827.
+
+USAGE
+sct_compute_mscc -di &lt;float&gt; -da &lt;float&gt; -db &lt;float&gt;
+
+MANDATORY ARGUMENTS
+ -di &lt;float&gt;                  Anteroposterior cord distance at the level of maximum injury
+ -da &lt;float&gt;                  Anteroposterior cord distance at the nearest normal level above the 
+                              level of injury
+ -db &lt;float&gt;                  Anteroposterior cord distance at the nearest normal level below the 
+                              level of injury
+
+OPTIONAL ARGUMENTS
+ -h                           Display this help
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-compute-mtr">
+<h3>sct_compute_mtr<a class="headerlink" href="#sct-compute-mtr" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Compute magnetization transfer ratio (MTR). Output is given in percentage.
+
+USAGE
+sct_compute_mtr -mt0 &lt;file&gt; -mt1 &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -mt0 &lt;file&gt;                  Image without MT pulse (MT0)  
+ -mt1 &lt;file&gt;                  Image with MT pulse (MT1)     
+
+OPTIONAL ARGUMENTS
+ -r {0,1}                     Remove temporary files. Default value = 1
+ -v {0,1,2}                   verbose: 0 = nothing, 1 = classic, 2 = expended Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-compute-snr">
+<h3>sct_compute_snr<a class="headerlink" href="#sct-compute-snr" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Compute SNR in a given ROI using methods described in [Dietrich et al., Measurement of 
+signal-to-noise ratios in MR images: Influence of multichannel coils, parallel imaging, and 
+reconstruction filters. J Magn Reson Imaging 2007; 26(2): 375-385].
+
+USAGE
+sct_compute_snr -i &lt;image_nifti&gt; -m &lt;image_nifti&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;image_nifti&gt;             4D data to compute the SNR on (along the 4th dimension).
+ -m &lt;image_nifti&gt;             ROI within which SNR will be averaged.
+
+OPTIONAL ARGUMENTS
+ -method {diff,mult}          Method to use to compute the SNR:
+                                - diff: Substract two volumes (defined by -vol) and estimate noise 
+                                  variance over space.
+                                - mult: Estimate noise variance over time across volumes specified 
+                                  with -vol. Default value = diff
+ -vol &lt;list of: int&gt;          List of volume numbers to use for computing SNR, separated with &quot;,&quot;. 
+                              Example: 0,31. To select all volumes in series set to -1. Default 
+                              value = [-1]
+ -vertfile &lt;image_nifti&gt;      File name of the vertebral labeling registered to the input images. 
+                              Default value = label/template/MNI-Poly-AMU_level.nii.gz
+ -vert &lt;str&gt;                  Vertebral levels where to compute the SNR. Default value = None
+ -z &lt;str&gt;                     Slices where to compute the SNR. Default value = None
+ -r {0,1}                     Remove temporary files. Default value = 1
+ -v {0,1}                     Verbose. 0: nothing. 1: basic. Default value = 0
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-concat-transfo">
+<h3>sct_concat_transfo<a class="headerlink" href="#sct-concat-transfo" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Concatenate transformations. This function is a wrapper for isct_ComposeMultiTransform (ANTs). N.B. 
+Order of input warping fields is important. For example, if you want to concatenate: A-&gt;B and B-&gt;C 
+to yield A-&gt;C, then you have to input warping fields like that: A-&gt;B,B-&gt;C.
+
+USAGE
+sct_concat_transfo -d &lt;file&gt; -w &lt;list of: file&gt;
+
+MANDATORY ARGUMENTS
+ -d &lt;file&gt;                    Destination image.            
+ -w &lt;list of: file&gt;           List of affine matrix or warping fields separated with &quot;,&quot; N.B. if 
+                              you want to use the inverse matrix, add &quot;-&quot; before matrix file name. 
+                              N.B. You should NOT use &quot;-&quot; with warping fields (only with matrices). 
+                              If you want to use an inverse warping field, then input it directly 
+                              (e.g., warp_template2anat.nii.gz instead of 
+                              warp_anat2template.nii.gz) 
+
+OPTIONAL ARGUMENTS
+ -o &lt;file_output&gt;             Name of output warping field. 
+ -v {0,1,2}                   verbose: 0 = nothing, 1 = classic, 2 = expended Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-convert">
+<h3>sct_convert<a class="headerlink" href="#sct-convert" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Convert image file to another type.
+
+USAGE
+sct_convert -i &lt;file&gt; -o &lt;file_output&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    File input                    
+ -o &lt;file_output&gt;             File output (indicate new extension)
+
+OPTIONAL ARGUMENTS
+ -squeeze {0,1}               Sueeze data dimension (remove unused dimension). Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-create-mask">
+<h3>sct_create_mask<a class="headerlink" href="#sct-create-mask" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Create mask along z direction.
+
+USAGE
+sct_create_mask -i &lt;file&gt; -p &lt;list of: str&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    Image to create mask on. Only used to get header. Must be 3D.
+ -p &lt;list of: str&gt;            Process to generate mask.
+                                coord: X,Y coordinate of center of mask. E.g.: coord,20x15
+                                point: volume that contains a single point. E.g.: 
+                                  point,label.nii.gz
+                                center: mask is created at center of FOV.
+                                centerline: volume that contains centerline or segmentation. E.g.: 
+                                  centerline,t2_seg.nii.gz
+
+OPTIONAL ARGUMENTS
+ -size &lt;str&gt;                  Size of the mask in the axial plane, given in pixel (ex: 35) or in 
+                              millimeter (ex: 35mm). If shape=gaussian, size corresponds to &quot;sigma&quot; 
+                              Default value = 41
+ -f {cylinder,box,gaussian}   Shape of the mask. Default value = cylinder
+ -o &lt;file_output&gt;             Name of output mask.          
+ -r {0,1}                     Remove temporary files. Default value = 1
+ -v {0,1,2}                   verbose: 0 = nothing, 1 = classic, 2 = expended Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-crop-image">
+<h3>sct_crop_image<a class="headerlink" href="#sct-crop-image" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Tools to crop an image. Either through command line or GUI
+
+USAGE
+sct_crop_image -i &lt;image_nifti&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;image_nifti&gt;             input image.                  
+
+OPTIONAL ARGUMENTS
+ -g {0,1}                     1: use the GUI to crop, 0: use the command line to crop Default value 
+                              = 0
+
+COMMAND LINE RELATED MANDATORY ARGUMENTS
+ -o &lt;file_output&gt;             output image. This option is REQUIRED for the command line execution
+ -v {0,1}                     1: display on, 0: display off (default) Default value = 1
+ -h                           Displays help                 
+
+GUI RELATED OPTIONAL ARGUMENTS
+ -r {0,1}                     Remove temporary files. Default = 1
+
+COMMAND LINE RELATED OPTIONAL ARGUMENTS
+ -m &lt;file&gt;                    cropping around the mask      
+ -start &lt;list of: float&gt;      start slices, ]0,1[: percentage, 0 &amp; &gt;1: slice number
+ -end &lt;list of: float&gt;        end slices, ]0,1[: percentage, 0: last slice, &gt;1: slice number, &lt;0: 
+                              last slice - value
+ -dim &lt;list of: int&gt;          dimension to crop, from 0 to n-1, default is 1
+ -shift &lt;list of: int&gt;        adding shift when used with mask, default is 0
+ -b &lt;float&gt;                   replace voxels outside cropping region with background value. 
+                                If both the -m and the -b flags are used : the image is croped 
+                                  &quot;exactly&quot; around the mask with a background (and not aroun
+                                  d a rectangle area including the mask). the shape of the imag
+                                  e isn&#39;t change.
+ -bmax                        maximize the cropping of the image (provide -dim if you want to 
+                              specify the dimensions)
+ -ref &lt;file&gt;                  crop input image based on reference image (works only for 3D images)
+ -mesh &lt;file&gt;                 mesh to crop                  
+ -rof {0,1}                   remove output file created when cropping Default value = 0
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-deepseg-gm">
+<span id="id2"></span><h3>sct_deepseg_gm<a class="headerlink" href="#sct-deepseg-gm" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>WARNING: you&#39;re using a Keras backend different than
+Tensorflow, which is not recommended. Please verify
+your configuration file according to: https://keras.io/backend/
+to make sure you&#39;re using Tensorflow Keras backend.
+
+
+DESCRIPTION
+Spinal Cord Gray Matter (GM) Segmentation using deep dilated convolutions. Reference: CS Perone, E 
+Calabrese, J Cohen-Adad. Spinal cord gray matter segmentation using deep dilated convolutions 
+(2017). arxiv.org/abs/1710.01269
+
+USAGE
+sct_deepseg_gm -i &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    Image filename to segment (3D volume). Contrast must be similar to 
+                              T2*-weighted, i.e., WM dark, GM bright and CSF bright.
+
+OPTIONAL ARGUMENTS
+ -o &lt;file_output&gt;             Output segmentation file name.
+
+MISC
+ -qc &lt;folder_creation&gt;        The path where the quality control generated content will be saved
+ -m {large,challenge}         Model to use (large or challenge).The model &#39;large&#39; will be slower 
+                              but will yield better results. The model &#39;challenge&#39; was built using 
+                              data from the following challenge: goo.gl/h4AVar. Default value = 
+                              large
+ -v {0,1}                     Verbose: 0 = no verbosity, 1 = verbose. Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-deepseg-sc">
+<span id="id3"></span><h3>sct_deepseg_sc<a class="headerlink" href="#sct-deepseg-sc" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Spinal Cord Segmentation using deep convolutional networks.
+
+USAGE
+sct_deepseg_sc -i &lt;image_nifti&gt; -c {t1,t2,t2s,dwi}
+
+MANDATORY ARGUMENTS
+ -i &lt;image_nifti&gt;             input image.                  
+ -c {t1,t2,t2s,dwi}           type of image contrast.       
+
+OPTIONAL ARGUMENTS
+ -ofolder &lt;folder_creation&gt;   output folder.                
+ -r {0,1}                     remove temporary files. Default value = 1
+ -v {0,1}                     1: display on, 0: display off (default) Default value = 1
+ -qc &lt;folder_creation&gt;        The path where the quality control generated content will be saved
+ -igt &lt;image_nifti&gt;           File name of ground-truth segmentation.
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-denoising-onlm">
+<h3>sct_denoising_onlm<a class="headerlink" href="#sct-denoising-onlm" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Utility function to denoise images. (Return the denoised image and also the difference between the 
+input and the output.)
+
+USAGE
+sct_denoising_onlm -i &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    Input NIFTI image to be denoised.
+
+OPTIONAL ARGUMENTS
+ -p {Rician,Gaussian}         Type of supposed noise: Rician or Gaussian. Default is Rician. 
+                              Default value = Rician
+ -d &lt;int&gt;                     Threshold value for what to be considered as noise. The standard 
+                              deviation of the noise is calculated for values below this limit. Not 
+                              relevant if -std value is precised.
+                                 Default value = 80
+ -std &lt;float&gt;                 Standard deviation of the noise. If not precised, it is calculated 
+                              using a background of point of values below the threshold value 
+                              (parameter d).
+ -o &lt;file_output&gt;             Name of the output NIFTI image.
+ -r {0,1}                     Remove temporary files. Specify 0 to get access to temporary files. 
+                              Default value = 1
+ -v {0,1,2}                   Verbose. 0: nothing. 1: basic. 2: extended. Default value = 0
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-detect-pmj">
+<h3>sct_detect_pmj<a class="headerlink" href="#sct-detect-pmj" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Detection of the Ponto-Medullary Junction (PMJ).
+   This method is machine-learning based and adapted for T1w-like or T2w-like images.
+   If the PMJ is detected from the input image, a nifti mask is output (&quot;*_pmj.nii.gz&quot;)
+   with one voxel (value=50) located at the predicted PMJ position.
+   If the PMJ is not detected, nothing is output.
+
+USAGE
+sct_detect_pmj -i &lt;file&gt; -c {t1,t2}
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    input image.                  
+ -c {t1,t2}                   type of image contrast, if your contrast is not in the available 
+                              options (t1, t2), use t1 (cord bright / CSF dark) or t2 (cord dark / 
+                              CSF bright)
+
+OPTIONAL ARGUMENTS
+ -s &lt;file&gt;                    SC segmentation or centerline mask. Provide this mask helps the 
+                              detection of the PMJ by indicating the position of the SC in the 
+                              Right-to-Left direction.
+ -ofolder &lt;folder_creation&gt;   Output folder                 
+ -qc &lt;folder_creation&gt;        The path where the quality control generated content will be saved
+ -igt &lt;image_nifti&gt;           File name of ground-truth PMJ (single voxel).
+ -r {0,1}                     Remove temporary files. Default value = 1
+ -v {0,1,2}                   Verbose: 0 = nothing, 1 = classic, 2 = expended Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-dice-coefficient">
+<h3>sct_dice_coefficient<a class="headerlink" href="#sct-dice-coefficient" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Compute the Dice Coefficient. Note: indexing (in both time and space) starts with 0 not 1! 
+Inputting -1 for a size will set it to the full image extent for that dimension.
+
+USAGE
+sct_dice_coefficient -i &lt;image_nifti&gt; -d &lt;image_nifti&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;image_nifti&gt;             First input image.            
+ -d &lt;image_nifti&gt;             Second input image.           
+
+OPTIONAL ARGUMENTS
+ -2d-slices {0,1,2}           Compute DC on 2D slices in the specified dimension
+ -b &lt;list of: int&gt;            Bounding box with the coordinates of the origin and the size of the 
+                              box as follow: x_origin,x_size,y_origin,y_size,z_origin,z_size
+ -bmax {0,1}                  Use maximum bounding box of the images union to compute DC
+ -bzmax {0,1}                 Use maximum bounding box of the images union in the &quot;Z&quot; direction to 
+                              compute DC
+ -bin {0,1}                   Binarize image before computing DC. (Put non-zero-voxels to 1)
+ -o &lt;file_output&gt;             Output file with DC results (.txt)
+ -r {0,1}                     Remove temporary files. Default value = 1
+ -v {0,1}                     Verbose. Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-dmri-compute-bvalue">
+<h3>sct_dmri_compute_bvalue<a class="headerlink" href="#sct-dmri-compute-bvalue" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Calculate b-value (in mm^2/s).
+
+USAGE
+sct_dmri_compute_bvalue -g &lt;float&gt; -b &lt;float&gt; -d &lt;float&gt;
+
+MANDATORY ARGUMENTS
+ -g &lt;float&gt;                   Amplitude of diffusion gradients (in mT/m)
+ -b &lt;float&gt;                   Big delta: time between both diffusion gradients (in ms)
+ -d &lt;float&gt;                   Small delta: duration of each diffusion gradient (in ms)
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-dmri-compute-dti">
+<h3>sct_dmri_compute_dti<a class="headerlink" href="#sct-dmri-compute-dti" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Compute Diffusion Tensor Images (DTI) using dipy.
+
+USAGE
+sct_dmri_compute_dti -i &lt;file&gt; -bval &lt;file&gt; -bvec &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    Input 4d file.                
+ -bval &lt;file&gt;                 Bvals file.                   
+ -bvec &lt;file&gt;                 Bvecs file.                   
+
+OPTIONAL ARGUMENTS
+ -method {standard,restore}   Type of method to calculate the diffusion tensor:
+                                standard: Standard equation [Basser, Biophys J 1994]
+                                restore: Robust fitting with outlier detection [Chang, MRM 2005] 
+                                  Default value = standard
+ -m &lt;file&gt;                    Mask used to compute DTI in for faster processing.
+ -o &lt;str&gt;                     Output prefix. Default value = dti_
+ -v {0,1,2}                   Verbose. 0: nothing. 1: basic. 2: extended. Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-dmri-concat-bvals">
+<h3>sct_dmri_concat_bvals<a class="headerlink" href="#sct-dmri-concat-bvals" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Concatenate bval files in time.
+
+USAGE
+sct_dmri_concat_bvals -i &lt;list of: file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;list of: file&gt;           List of the bval files to concatenate.
+
+OPTIONAL ARGUMENTS
+ -o &lt;file_output&gt;             Output file with bvals merged.
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-dmri-concat-bvecs">
+<h3>sct_dmri_concat_bvecs<a class="headerlink" href="#sct-dmri-concat-bvecs" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Concatenate bvec files in time. You can either use bvecs in lines or columns.
+  N.B.: Return bvecs in lines. If you need it in columns, please use sct_dmri_transpose_bvecs 
+    afterwards.
+
+USAGE
+sct_dmri_concat_bvecs -i &lt;list of: file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;list of: file&gt;           List of the bvec files to concatenate.
+
+OPTIONAL ARGUMENTS
+ -o &lt;file_output&gt;             Output file with bvecs concatenated.
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-dmri-create-noisemask">
+<h3>sct_dmri_create_noisemask<a class="headerlink" href="#sct-dmri-create-noisemask" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Identification and estimation of noise in the diffusion signal, implemented by the Dipy software 
+project (http://nipy.org/dipy/), based on the PIESNO method: Koay C.G., E. Ozarslan, C. Pierpaoli. 
+Probabilistic Identification and Estimation of Noise (PIESNO): A self-consistent approach and its 
+applications in MRI. JMR, 199(1):94-103, 2009.
+
+USAGE
+sct_dmri_create_noisemask -i &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    Input file                    
+
+OPTIONAL ARGUMENTS
+ -dof &lt;int&gt;                   Degree of freedom of the noise distribution. Corresponds to the 
+                              number of antenna for an acquisition without parallel imaging with 
+                              sum of squares combination. Otherwise, dof is close to 1. Default 
+                              value = 1
+ -o &lt;file_output&gt;             Output file.                  
+ -h                           Display this help.
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-dmri-display-bvecs">
+<h3>sct_dmri_display_bvecs<a class="headerlink" href="#sct-dmri-display-bvecs" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Display scatter plot of gradient directions from bvecs file.
+
+USAGE
+sct_dmri_display_bvecs -bvec &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -bvec &lt;file&gt;                 bvecs file.
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-dmri-eddy-correct">
+<h3>sct_dmri_eddy_correct<a class="headerlink" href="#sct-dmri-eddy-correct" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span> sct_dmri_eddy_correct
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Part of the Spinal Cord Toolbox &lt;https://sourceforge.net/projects/spinalcordtoolbox&gt;
+
+DESCRIPTION
+Correct Eddy-current distortions using pairs of DW images acquired at reversed gradient polarities
+USAGE: 
+  sct_dmri_eddy_correct -i &lt;filename&gt; -b &lt;bvecs_file&gt;
+
+MANDATORY ARGUMENTS
+  -i           input_file 
+  -b           bvecs file 
+
+OPTIONAL ARGUMENTS
+  -o           Specify Output path.
+  -s           Set value to 0 for volume based correction. Default value is 1 i.e slicewise correction
+  -m           matrix folder 
+  -c           Cost function FLIRT - mutualinfo | woods | corratio | normcorr | normmi | leastsquares. Default is &lt;normcorr&gt;..
+  -p           Interpolation - Default is trilinear. Additional options: nearestneighbour,sinc,spline.
+  -g {0,1}     Set value to 1 for plotting graphs. Default value is 0 
+  -r           Set value to 0 for not deleting temp files. Default value is 1 
+  -v {0,1}     Set verbose=1 for sct.printv(ng text. Default value is 0 
+  -h           help. Show this message.
+
+EXAMPLE:
+  sct_dmri_eddy_correct -i KS_HCP34.nii -b KS_HCP_bvec.txt
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-dmri-moco">
+<h3>sct_dmri_moco<a class="headerlink" href="#sct-dmri-moco" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+  Motion correction of dMRI data. Some of the features to improve robustness were proposed in Xu et 
+al. (http://dx.doi.org/10.1016/j.neuroimage.2012.11.014) and include:
+  - group-wise (-g)
+  - slice-wise regularized along z using polynomial function (-param). For more info about the 
+    method, type: isct_antsSliceRegularizedRegistration
+  - masking (-m)
+  - iterative averaging of target volume
+  
+
+USAGE
+sct_dmri_moco -i &lt;file&gt; -bvec &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    Diffusion data                
+ -bvec &lt;file&gt;                 Bvecs file                    
+
+OPTIONAL ARGUMENTS
+ -bval &lt;file&gt;                 Bvals file                    
+ -bvalmin &lt;float&gt;             B-value threshold (in s/mm2) below which data is considered as b=0.
+ -g &lt;int&gt;                     Group nvols successive dMRI volumes for more robustness. Default 
+                              value = 3
+ -m &lt;file&gt;                    Binary mask to limit voxels considered by the registration metric.
+ -param &lt;list of: str&gt;        Advanced parameters. Assign value with &quot;=&quot;; Separate arguments with 
+                              &quot;,&quot;
+                                poly [int]: Degree of polynomial function used for regularization 
+                                  along Z. For no regularization set to 0. Default=2.
+                                smooth [mm]: Smoothing kernel. Default=2.
+                                metric {MI, MeanSquares, CC}: Metric used for registration. 
+                                  Default=MI.
+                                gradStep [float]: Searching step used by registration algorithm. 
+                                  The higher the more deformation allowed. Default=1.
+                                sample [0-1]: Sampling rate used for registration metric. 
+                                  Default=0.2.
+                                
+ -thr &lt;float&gt;                 Segment DW data using OTSU algorithm. Value corresponds to OTSU 
+                              threshold. For no segmentation set to 0.
+ -x {nn,linear,spline}        Final Interpolation. Default value = spline
+ -ofolder &lt;folder_creation&gt;   Output folder Default value = ./
+MISC
+ -r {0,1}                     Remove temporary files. Default value = 1
+ -v {0,1,2}                   verbose: 0 = nothing, 1 = classic, 2 = expended Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-dmri-separate-b0-and-dwi">
+<h3>sct_dmri_separate_b0_and_dwi<a class="headerlink" href="#sct-dmri-separate-b0-and-dwi" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Separate b=0 and DW images from diffusion dataset.
+
+USAGE
+sct_dmri_separate_b0_and_dwi -i &lt;image_nifti&gt; -bvec &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;image_nifti&gt;             Diffusion data                
+ -bvec &lt;file&gt;                 bvecs file                    
+
+OPTIONAL ARGUMENTS
+ -a {0,1}                     average b=0 and DWI data. Default value = 0
+ -bval &lt;file&gt;                 bvals file. Used to identify low b-values (in case different from 0).
+ -bvalmin &lt;float&gt;             B-value threshold (in s/mm2) below which data is considered as b=0.
+ -ofolder &lt;folder_creation&gt;   Output folder. Default value = ./
+ -v {0,1}                     Verbose. Default value = 1    
+ -r {0,1}                     remove temporary files. Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-dmri-transpose-bvecs">
+<h3>sct_dmri_transpose_bvecs<a class="headerlink" href="#sct-dmri-transpose-bvecs" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Transpose bvecs file (if necessary) to get nx3 structure.
+
+USAGE
+sct_dmri_transpose_bvecs -bvec &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -bvec &lt;file&gt;                 Input bvecs file.             
+
+OPTIONAL ARGUMENTS
+ -o &lt;file_output&gt;             Output bvecs file. By default input file is overwritten.
+ -v {0,1,2}                   Verbose. 0: nothing. 1: basic. 2: extended. Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-download-data">
+<h3>sct_download_data<a class="headerlink" href="#sct-download-data" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Download binaries from the web.
+
+USAGE
+sct_download_data -d {sct_example_data,sct_testing_data,PAM50,MNI-Poly-AMU,gm_model,optic_models,pmj_models,binaries_debian,binaries_centos,binaries_osx,course_hawaii17,deepseg_gm_models,deepseg_sc_models}
+
+MANDATORY ARGUMENTS
+ -d {sct_example_data,sct_testing_data,PAM50,MNI-Poly-AMU,gm_model,optic_models,pmj_models,binaries_debian,binaries_centos,binaries_osx,course_hawaii17,deepseg_gm_models,deepseg_sc_models}Name of the dataset.          
+
+OPTIONAL ARGUMENTS
+ -v {0,1,2}                   Verbose. 0: nothing. 1: basic. 2: extended. Default value = 1
+ -o &lt;folder_creation&gt;         path to save the downloaded data
+ -h                           Display this help
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-extract-metric">
+<h3>sct_extract_metric<a class="headerlink" href="#sct-extract-metric" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+This program extracts metrics (e.g., DTI or MTR) within labels. Labels could be a single file or a 
+folder generated with &#39;sct_warp_template&#39; and containing multiple label files and a label 
+description file (info_label.txt). The labels should be in the same space coordinates as the input 
+image.
+
+USAGE
+sct_extract_metric -i &lt;image_nifti&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;image_nifti&gt;             File to extract metrics from. 
+
+OPTIONAL ARGUMENTS
+ -f &lt;folder&gt;                  Folder containing WM tract labels, or single label file. Default 
+                              value = label/atlas
+ -l &lt;str&gt;                     Label IDs to extract the metric from. Default = all labels. Separate 
+                              labels with &quot;,&quot;. To select a group of consecutive labels use &quot;:&quot;. 
+                              Example: 1:3 is equivalent to 1,2,3. Maximum Likelihood (or MAP) is 
+                              computed using all tracts, but only values of the selected tracts are 
+                              reported.
+ -method {ml,map,wa,wath,bin,max}Method to extract metrics.
+                                ml: maximum likelihood (only use with well-defined regions and low 
+                                  noise)
+                                  N.B. ONLY USE THIS METHOD WITH THE WHITE MATTER ATLAS! The sum of 
+                                  all tracts should be 1 in all voxels (the algorithm doesn&#39;t normal
+                                  ize the atlas).
+                                map: maximum a posteriori. Mean priors are estimated by maximum 
+                                  likelihood within three clusters (white matter, gray matter and CS
+                                  F). Tract and  noise variance are set with flag -p.
+                                  N.B. ONLY USE THIS METHOD WITH THE WHITE MATTER ATLAS! The sum of 
+                                  all tracts should be 1 in all voxels (the algorithm doesn&#39;t normal
+                                  ize the atlas).
+                                wa: weighted average
+                                wath: weighted average (only consider values &gt;0.5)
+                                bin: binarize mask (threshold=0.5)
+                                max: for each z-slice of the input data, extract the max value for 
+                                  each slice of the input data. This mode is useful to extract CSA f
+                                  rom an interpolated image (ignore partial volume effect). Default 
+                                  value = wath
+ -overwrite &lt;int&gt;             In the case you choose &quot;.xls&quot; for the output file extension and you 
+                              specify a pre-existing output file (see flag &quot;-o&quot;),
+                                                      this option will allow you to overwrite this 
+                                  .xls file (&quot;-overwrite 1&quot;) or to append the results at the end (l
+                                  ast line) of the file (&quot;-overwrite 0&quot;).
+ -o &lt;file_output&gt;             File name (including the file extension) of the output result file 
+                              collecting the metric estimation results. 
+                                Three file types are available: a CSV text file (extension .txt), a 
+                                  MS Excel file (extension .xls) and a pickle file (extension .pickl
+                                  e). Default: metric_label.txt Default value = metric_label.txt
+ -output-map &lt;file_output&gt;    File name for an image consisting of the atlas labels multiplied by 
+                              the estimated metric values yielding the metric value map, useful to 
+                              assess the metric estimation and especially partial volume effects.
+ -vert &lt;str&gt;                  Vertebral levels to estimate the metric across. Example: 2:9 for C2 
+                              to T2.
+ -z &lt;str&gt;                     Slice range to estimate the metric from. First slice is 0. Example: 
+                              5:23
+                                You can also select specific slices using commas. Example: 
+                                  0,2,3,5,12
+
+FOR ADVANCED USERS
+ -param &lt;str&gt;                 Advanced parameters for the &#39;map&#39; method. Separate with comma. All 
+                              items must be listed (separated with comma).
+                                    #1: standard deviation of metrics across labels
+                                    #2: standard deviation of the noise (assumed Gaussian)
+ -fix-label &lt;list of: str&gt;    When using ML or MAP estimations, if you do not want to estimate the 
+                              metric in one label and fix its value to avoid effects on other 
+                              labels, specify &lt;label_ID&gt;,&lt;metric_value. Example to fix the CSF 
+                              value to 0: -fix-label 36,0.
+ -norm-file &lt;image_nifti&gt;     Filename of the label by which the user wants to normalize
+ -norm-method {sbs,whole}     Method to use for normalization:
+                                - sbs: normalization slice-by-slice
+                                - whole: normalization by the metric value in the whole label for 
+                                  all slices.
+ -mask-weighted &lt;image_nifti&gt; Nifti mask to weight each voxel during ML or MAP estimation.
+
+
+To list white matter atlas labels:
+sct_extract_metric -f ../../../data/atlas
+
+To compute FA within labels 0, 2 and 3 within vertebral levels C2 to C7 using binary method:
+sct_extract_metric -i dti_FA.nii.gz -f label/atlas -l 0,2,3 -v 2:7 -m bin
+
+To compute average MTR in a region defined by a single label file (could be binary or 0-1 weighted mask) between slices 1 and 4:
+sct_extract_metric -i mtr.nii.gz -f my_mask.nii.gz -z 1:4 -m wa
+
+
+List of labels in ../../../data/PAM50/atlas/info_label.txt:
+--------------------------------------------------------------------------------------
+# White matter atlas. Generated on: 01-Sep-2016
+#
+# Keyword=IndivLabels (Please DO NOT change this line)
+# ID, name, file
+0, WM left fasciculus gracilis, PAM50_atlas_00.nii.gz
+1, WM right fasciculus gracilis, PAM50_atlas_01.nii.gz
+2, WM left fasciculus cuneatus, PAM50_atlas_02.nii.gz
+3, WM right fasciculus cuneatus, PAM50_atlas_03.nii.gz
+4, WM left lateral corticospinal tract, PAM50_atlas_04.nii.gz
+5, WM right lateral corticospinal tract, PAM50_atlas_05.nii.gz
+6, WM left ventral spinocerebellar tract, PAM50_atlas_06.nii.gz
+7, WM right ventral spinocerebellar tract, PAM50_atlas_07.nii.gz
+8, WM left rubrospinal tract, PAM50_atlas_08.nii.gz
+9, WM right rubrospinal tract, PAM50_atlas_09.nii.gz
+10, WM left lateral reticulospinal tract, PAM50_atlas_10.nii.gz
+11, WM right lateral reticulospinal tract, PAM50_atlas_11.nii.gz
+12, WM left spinal lemniscus (spinothalamic and spinoreticular tracts), PAM50_atlas_12.nii.gz
+13, WM right spinal lemniscus (spinothalamic and spinoreticular tracts), PAM50_atlas_13.nii.gz
+14, WM left spino-olivary tract, PAM50_atlas_14.nii.gz
+15, WM right spino-olivary tract, PAM50_atlas_15.nii.gz
+16, WM left ventrolateral reticulospinal tract, PAM50_atlas_16.nii.gz
+17, WM right ventrolateral reticulospinal tract, PAM50_atlas_17.nii.gz
+18, WM left lateral vestibulospinal tract, PAM50_atlas_18.nii.gz
+19, WM right lateral vestibulospinal tract, PAM50_atlas_19.nii.gz
+20, WM left ventral reticulospinal tract, PAM50_atlas_20.nii.gz
+21, WM right ventral reticulospinal tract, PAM50_atlas_21.nii.gz
+22, WM left ventral corticospinal tract, PAM50_atlas_22.nii.gz
+23, WM right ventral corticospinal tract, PAM50_atlas_23.nii.gz
+24, WM left tectospinal tract, PAM50_atlas_24.nii.gz
+25, WM right tectospinal tract, PAM50_atlas_25.nii.gz
+26, WM left medial reticulospinal tract, PAM50_atlas_26.nii.gz
+27, WM right medial reticulospinal tract, PAM50_atlas_27.nii.gz
+28, WM left medial longitudinal fasciculus, PAM50_atlas_28.nii.gz
+29, WM right medial longitudinal fasciculus, PAM50_atlas_29.nii.gz
+30, GM left dorsal horn, PAM50_atlas_30.nii.gz
+31, GM right dorsal horn, PAM50_atlas_31.nii.gz
+32, GM left intermediate zone, PAM50_atlas_32.nii.gz
+33, GM right intermediate zone, PAM50_atlas_33.nii.gz
+34, GM left ventral horn, PAM50_atlas_34.nii.gz
+35, GM right ventral horn, PAM50_atlas_35.nii.gz
+36, CSF contour, PAM50_atlas_36.nii.gz
+
+# Combined labels
+# Keyword=CombinedLabels (Please DO NOT change this line)
+# ID, name, IDgroup
+50, spinal cord, 0:35
+51, white matter, 0:29
+52, gray matter, 30:35
+53, dorsal columns, 0:3
+54, lateral funiculi, 4:13
+55, ventral funiculi, 14:29
+
+# Clusters used for the first step of the MAP estimation (for advanced users only)
+# Keyword=MAPLabels (Please DO NOT change this line)
+# Name, IDgroup
+white matter, 0:29
+gray matter, 30:35
+CSF, 36
+--------------------------------------------------------------------------------------
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-flatten-sagittal">
+<h3>sct_flatten_sagittal<a class="headerlink" href="#sct-flatten-sagittal" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Flatten the spinal cord in the sagittal plane (to make nice pictures).
+
+USAGE
+sct_flatten_sagittal -i &lt;image_nifti&gt; -s &lt;image_nifti&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;image_nifti&gt;             Input volume.                 
+ -s &lt;image_nifti&gt;             Centerline.                   
+
+OPTIONAL ARGUMENTS
+ -x {nearestneighbour,trilinear,sinc}Final interpolation. Default value = sinc
+ -d &lt;int&gt;                     Degree of fitting polynome. Default value = 10
+ -f {polynome,nurbs}          Fitting algorithm. Default value = nurbs
+ -r {0,1}                     Removes the temporary folder and debug folder used for the algorithm 
+                              at the end of execution Default value = 1
+ -v {0,1}                     1: display on, 0: display off (default) Default value = 1
+ -h                           Display this help
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-fmri-compute-tsnr">
+<h3>sct_fmri_compute_tsnr<a class="headerlink" href="#sct-fmri-compute-tsnr" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Compute temporal SNR (tSNR) in fMRI time series.
+
+USAGE
+sct_fmri_compute_tsnr -i &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    fMRI data                     
+
+OPTIONAL ARGUMENTS
+ -v {0,1}                     verbose Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-fmri-moco">
+<h3>sct_fmri_moco<a class="headerlink" href="#sct-fmri-moco" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Motion correction of fMRI data. Some robust features include:
+    - group-wise (-g)
+    - slice-wise regularized along z using polynomial function (-p)
+      For more info about the method, type: isct_antsSliceRegularizedRegistration
+    - masking (-m)
+    - iterative averaging of target volume
+
+USAGE
+sct_fmri_moco -i &lt;image_nifti&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;image_nifti&gt;             4D data                       
+
+OPTIONAL ARGUMENTS
+ -g &lt;int&gt;                     Group nvols successive fMRI volumes for more robustness. Default 
+                              value = 3
+ -m &lt;image_nifti&gt;             Binary mask to limit voxels considered by the registration metric.
+ -param &lt;list of: str&gt;        Advanced parameters. Assign value with &quot;=&quot;; Separate arguments with 
+                              &quot;,&quot;
+                                poly [int]: Degree of polynomial function used for regularization 
+                                  along Z. For no regularization set to 0. Default=2.
+                                smooth [mm]: Smoothing kernel. Default=2.
+                                metric {MI, MeanSquares, CC}: Metric used for registration. 
+                                  Default=MeanSquares.
+                                gradStep [float]: Searching step used by registration algorithm. 
+                                  The higher the more deformation allowed. Default=1.
+                                sample [0-1]: Sampling rate used for registration metric. 
+                                  Default=0.2.
+                                numTarget [int]: Target volume or group (starting with 0). 
+                                  Default=0.
+                                
+ -ofolder &lt;folder_creation&gt;   Output path. Default value = ./
+ -x {nn,linear,spline}        Final interpolation. Default value = linear
+ -r {0,1}                     Remove temporary files. Default value = 1
+ -v {0,1,2}                   Verbose. Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-get-centerline">
+<h3>sct_get_centerline<a class="headerlink" href="#sct-get-centerline" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+This function allows the extraction of the spinal cord centerline. Two methods are available: OptiC 
+(automatic) and Viewer (manual).
+
+USAGE
+sct_get_centerline -i &lt;image_nifti&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;image_nifti&gt;             input image.                  
+
+OPTIONAL ARGUMENTS
+ -c {t1,t2,t2s,dwi}           type of image contrast.       
+ -ofolder &lt;folder_creation&gt;   output folder.                
+ -roi {0,1}                   outputs a ROI file, compatible with JIM software. Default value = 0
+ -method {optic,viewer}       Method used for extracting the centerline.
+                                optic: automatic spinal cord detection method
+                                viewer: manually selected a few points, approximation with NURBS 
+                                  Default value = optic
+ -gap &lt;float&gt;                 Gap in mm between manually selected points when using the Viewer 
+                              method. Default value = 10.0
+ -igt &lt;image_nifti&gt;           File name of ground-truth centerline or segmentation (binary nifti).
+ -r {0,1}                     remove temporary files. Default value = 1
+ -v {0,1}                     1: display on, 0: display off (default) Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-image">
+<h3>sct_image<a class="headerlink" href="#sct-image" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Perform manipulations on images (e.g., pad, change space, split along dimension). Inputs can be a 
+number, a 4d image, or several 3d images separated with &quot;,&quot;
+
+USAGE
+sct_image -i &lt;list of: file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;list of: file&gt;           Input file(s). If several inputs: separate them by a coma without 
+                              white space.
+                                
+
+OPTIONAL ARGUMENTS
+ -o &lt;file_output&gt;             Output file.                  
+
+Basic image operations:
+ -pad &lt;str&gt;                   Pad 3D image. Specify padding as: &quot;x,y,z&quot; (in voxel)
+ -pad-asym &lt;str&gt;              Pad 3D image with asymmetric padding. Specify padding as: 
+                              &quot;x_i,x_f,y_i,y_f,z_i,z_f&quot; (in voxel)
+ -copy-header &lt;file&gt;          Copy the header of the input image (specified in -i) to the 
+                              destination image (specified here)
+ -split {x,y,z,t}             Split data along the specified dimension. The suffix _DIM+NUMBER will 
+                              be added to the intput file name.
+ -concat {x,y,z,t}            Concatenate data along the specified dimension
+ -remove-vol &lt;list of: int&gt;   Remove specific volumes from a 4d volume. Separate with &quot;,&quot;
+ -keep-vol &lt;list of: int&gt;     Keep specific volumes from a 4d volume (remove others). Separate with 
+                              &quot;,&quot;
+ -type {uint8,int16,int32,float32,complex64,float64,int8,uint16,uint32,int64,uint64}Change file type              
+
+Orientation operations: 
+ -getorient                   Get orientation of the input image
+ -setorient {RIP,LIP,RSP,LSP,RIA,LIA,RSA,LSA,IRP,ILP,SRP,SLP,IRA,ILA,SRA,SLA,RPI,LPI,RAI,LAI,RPS,LPS,RAS,LAS,PRI,PLI,ARI,ALI,PRS,PLS,ARS,ALS,IPR,SPR,IAR,SAR,IPL,SPL,IAL,SAL,PIR,PSR,AIR,ASR,PIL,PSL,AIL,ASL}Set orientation of the input image
+ -setorient-data {RIP,LIP,RSP,LSP,RIA,LIA,RSA,LSA,IRP,ILP,SRP,SLP,IRA,ILA,SRA,SLA,RPI,LPI,RAI,LAI,RPS,LPS,RAS,LAS,PRI,PLI,ARI,ALI,PRS,PLS,ARS,ALS,IPR,SPR,IAR,SAR,IPL,SPL,IAL,SAL,PIR,PSR,AIR,ASR,PIL,PSL,AIL,ASL}Set orientation of the input image&#39;s data. Use with care !ro
+
+Multi-component operations on ITK composite warping fields:
+ -mcs                         Multi-component split: Split ITK warping field into three separate 
+                              displacement fields. The suffix _X, _Y and _Z will be added to the 
+                              input file name.
+ -omc                         Multi-component merge: Merge inputted images into one multi-component 
+                              image. Requires several inputs.
+
+Warping field operations:
+ -display-warp                Create a grid and deform it using provided warping field.
+
+Misc
+ -v {0,1,2}                   Verbose. 0: nothing. 1: basic. 2: extended. Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-invert-image">
+<h3>sct_invert_image<a class="headerlink" href="#sct-invert-image" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+This function inverts the image intensity using the maximum intensity in the image and 0.
+
+USAGE
+sct_invert_image -i &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    Image to invert.              
+
+OPTIONAL ARGUMENTS
+ -o &lt;file_output&gt;             output image. Default value = inverted_image.nii.gz
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-label-utils">
+<h3>sct_label_utils<a class="headerlink" href="#sct-label-utils" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Utility function for label image.
+
+USAGE
+sct_label_utils -i &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    Input image.                  
+
+OPTIONAL ARGUMENTS
+ -o &lt;list of: file_output&gt;    Output image(s). Default value = labels.nii.gz
+ -add &lt;int&gt;                   Add value to all labels. Value can be negative.
+ -create &lt;list of: Coordinate&gt;Create labels in a new image. List labels as: 
+                              x1,y1,z1,value1:x2,y2,z2,value2, ...
+ -create-add &lt;list of: Coordinate&gt;Same as &quot;-create&quot;, but add labels to the input image instead of 
+                              creating a new image.
+ -create-seg &lt;list of: str&gt;   Create labels along cord segmentation (or centerline) defined by 
+                              &quot;-i&quot;. First value is &quot;z&quot;, second is the value of the label. Separate 
+                              labels with &quot;:&quot;. Example: 5,1:14,2:23,3. To select the mid-point in 
+                              the superior-inferior direction, set z to &quot;-1&quot;. For example if you 
+                              know that C2-C3 disc is centered in the S-I direction, then enter: 
+                              -1,3
+ -cross &lt;int&gt;                 Create a cross around each non-zero value. Input cross radius in mm.
+ -cubic-to-point              Compute the center-of-mass for each label value.
+ -display                     Display all labels (i.e. non-zero values).
+ -increment                   Takes all non-zero values, sort them along the inverse z direction, 
+                              and attributes the values 1, 2, 3, etc.
+ -vert-body &lt;list of: int&gt;    From vertebral labeling, create points that are centered at the 
+                              mid-vertebral levels. Separate desired levels with &quot;,&quot;. To get all 
+                              levels, enter &quot;0&quot;.
+ -vert-continuous             Convert discrete vertebral labeling to continuous vertebral labeling.
+ -MSE &lt;file&gt;                  Compute Mean Square Error between labels from input and reference 
+                              image. Specify reference image here.
+ -remove &lt;file&gt;               Remove labels from input image (-i) that are not in reference image 
+                              (specified here).
+ -remove-sym &lt;file&gt;           Remove labels from input image (-i) and reference image (specified 
+                              here) that don&#39;t match. You must provide two output names separated 
+                              by &quot;,&quot;.
+ -v {0,1,2}                   Verbose. 0: nothing. 1: basic. 2: extended. Default value = 1
+ -create-viewer &lt;list of: int&gt;Manually label from a GUI a list of labels IDs, separated with &quot;,&quot;. 
+                              Example: 2,3,4,5
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-label-vertebrae">
+<h3>sct_label_vertebrae<a class="headerlink" href="#sct-label-vertebrae" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+This function takes an anatomical image and its cord segmentation (binary file), and outputs the 
+cord segmentation labeled with vertebral level. The algorithm requires an initialization (first 
+disc) and then performs a disc search in the superior, then inferior direction, using template disc 
+matching based on mutual information score.
+  Tips: To run the function with init txt file that includes flags -initz/-initcenter:
+  sct_label_vertebrae -i t2.nii.gz -s t2_seg_manual.nii.gz  &quot;$(&lt; init_label_vertebrae.txt)&quot;
+  
+
+USAGE
+sct_label_vertebrae -i &lt;file&gt; -s &lt;file&gt; -c {t1,t2}
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    input image.                  
+ -s &lt;file&gt;                    Segmentation or centerline of the spinal cord.
+ -c {t1,t2}                   type of image contrast, t2: cord dark / CSF bright ; t1: cord bright 
+                              / CSF dark
+
+OPTIONAL ARGUMENTS
+ -t &lt;folder&gt;                  Path to template. Default value = 
+                              /home/cJ/Work/exmakhina/neuropoly/code/spinalcordtoolbox/data/PAM50
+ -initz &lt;list of: int&gt;        Initialize using slice number and disc value. Example: 68,3 (slice 68 
+                              corresponds to disc C3/C4). WARNING: Slice number should correspond 
+                              to superior-inferior direction (e.g. Z in RPI orientation, but Y in 
+                              LIP orientation).
+ -initcenter &lt;int&gt;            Initialize using disc value centered in the rostro-caudal direction. 
+                              If the spine is curved, then consider the disc that projects onto the 
+                              cord at the center of the z-FOV
+ -initc2                      Initialize by clicking on C2-C3 disc using interactive window.
+ -initfile &lt;file&gt;             Initialize labeling by providing a text file which includes either 
+                              -initz or -initcenter flag.
+ -ofolder &lt;folder_creation&gt;   Output folder.                
+ -denoise {0,1}               Apply denoising filter to the data. Sometimes denoising is too 
+                              aggressive, so use with care. Default value = 0
+ -laplacian {0,1}             Apply Laplacian filtering. More accuracy but could mistake disc 
+                              depending on anatomy. Default value = 0
+ -param &lt;list of: str&gt;        Advanced parameters. Assign value with &quot;=&quot;; Separate arguments with 
+                              &quot;,&quot;
+                                shift_AP_initc2 [mm]: AP shift for finding C2 disc. Default=35.
+                                size_AP_initc2 [mm]: AP window size finding C2 disc. Default=9.
+                                shift_IS_initc2 [mm]: IS shift for finding C2 disc. Default=15.
+                                size_IS_initc2 [mm]: IS window size finding C2 disc. Default=30.
+                                size_RL_initc2 [mm]: RL shift for size finding C2 disc. Default=1.
+                                shift_AP [mm]: AP shift of centerline for disc search. Default=32.
+                                size_AP [mm]: AP window size for disc search. Default=11.
+                                size_RL [mm]: RL window size for disc search. Default=1.
+                                size_IS [mm]: IS window size for disc search. Default=19.
+                                gaussian_std [mm]: STD of the Gaussian function, centered at the 
+                                  most rostral point of the image, and used to weight C2-C3 d
+                                  isk location finding towards the rostral portion of the FOV. Va
+                                  lues to set between 0.1 (strong weighting) and 999 (no 
+                                  weighting). Default=1.0.
+                                
+ -r {0,1}                     Remove temporary files. Default value = 1
+ -v {0,1,2}                   Verbose. 0: nothing. 1: basic. 2: extended. Default value = 1
+ -h                           display this help             
+ -qc &lt;folder_creation&gt;        The path where the quality control generated content will be saved
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-make-ground-truth">
+<h3>sct_make_ground_truth<a class="headerlink" href="#sct-make-ground-truth" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>  File &quot;../../../bin/sct_make_ground_truth&quot;, line 507
+    sct.run([&#39;sct_resample&#39;, &#39;-i&#39;, ftmp_seg, &#39;-o&#39;, add_suffix(ftmp_seg, &#39;_sub&#39;); &#39;-f&#39;, &#39;1x1x&#39;+zsubsample], verbose)
+                                                                               ^
+SyntaxError: invalid syntax
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-maths">
+<h3>sct_maths<a class="headerlink" href="#sct-maths" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Perform mathematical operations on images. Some inputs can be either a number or a 4d image or 
+several 3d images separated with &quot;,&quot;
+
+USAGE
+sct_maths -i &lt;file&gt; -o &lt;file_output&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    Input file.                   
+ -o &lt;file_output&gt;             Output file.                  
+
+OPTIONAL ARGUMENTS
+
+Basic operations:
+ -add &lt;str&gt;                   Add following input (can be number or image(s))
+ -sub &lt;str&gt;                   Substract following input (can be number or image)
+ -mul &lt;str&gt;                   Multiply following input (can be number or image(s))
+ -div &lt;str&gt;                   Divide following input (can be number or image)
+ -mean {x,y,z,t}              Average data across dimension.
+ -rms {x,y,z,t}               Compute root-mean-squared across dimension.
+ -std {x,y,z,t}               Compute STD across dimension. 
+ -bin &lt;float&gt;                 Binarize image using specified threshold. E.g. -bin 0.5
+
+Thresholding methods:
+ -otsu &lt;int&gt;                  Threshold image using Otsu algorithm.
+                                nbins: number of bins. Example: 256
+ -otsu_adap &lt;list of: int&gt;    Threshold image using Adaptive Otsu algorithm.
+                                block_size:
+                                offset:
+ -otsu_median &lt;list of: int&gt;  Threshold image using Median Otsu algorithm. Separate with &quot;,&quot;
+                                - Size of the median filter. Example: 2
+                                - Number of iterations. Example: 3
+                                
+ -percent &lt;int&gt;               Threshold image using percentile of its histogram.
+ -thr &lt;float&gt;                 Use following number to threshold image (zero below number).
+
+Mathematical morphology
+ -dilate &lt;list of: int&gt;       Dilate binary image. If only one input is given, structured element 
+                              is a ball with input radius (in voxel). If comma-separated inputs are 
+                              given (e.g., &quot;2,4,5&quot;), structured element is a box with input 
+                              dimensions.
+ -erode &lt;list of: int&gt;        Erode binary image. If only one input is given, structured element is 
+                              a ball with input radius (in voxel). If comma-separated inputs are 
+                              given (e.g., &quot;2,4,5&quot;), structured element is a box with input 
+                              dimensions.
+
+Filtering methods:
+ -smooth &lt;list of: float&gt;     Gaussian smoothing filter with specified standard deviations in mm 
+                              for each axis (e.g.: 2,2,1) or single value for all axis (e.g.: 2).
+ -laplacian &lt;list of: float&gt;  Laplacian filtering with specified standard deviations in mm for all 
+                              axes (e.g.: 2).
+ -denoise &lt;list of: str&gt;      Non-local means adaptative denoising from P. Coupe et al. as 
+                              implemented in dipy. Separate with &quot;,&quot;. Example: p=1,b=3
+                                p: (patch radius) similar patches in the non-local means are 
+                                  searched for locally, inside a cube of side 2*p+1 centered at e
+                                  ach voxel of interest. Default: p=1
+                                b: (block radius) the size of the block to be used (2*b+1) in the 
+                                  blockwise non-local means implementation. Default: b=5 (Block rad
+                                  ius must be smaller than the smaller image dimension: default v
+                                  alue is lowered for small images)
+                                To use default parameters, write -denoise 1
+
+Similarity metric
+ -mi &lt;file&gt;                   Compute the mutual information (MI) between both input files (-i and 
+                              -mi) as in: 
+                              http://sciki
+                              t-learn.org/
+                              stable/modules/generated/sklearn.metrics.mutual_info_score.html
+ -minorm &lt;file&gt;               Compute the normalized mutual information (MI) between both input 
+                              files (-i and -mi) as in: 
+                              http://scikit-learn.org/st
+                              able/modules/generated/skl
+                              earn.metrics.normalized_mutual_info_score.html
+ -corr &lt;file&gt;                 Compute the cross correlation (CC) between both input files (-i and 
+                              -cc).
+
+Misc
+ -symmetrize {0,1,2}          Symmetrize data along the specified dimension.
+ -type {uint8,int16,int32,float32,complex64,float64,int8,uint16,uint32,int64,uint64}Output type.                  
+ -v {0,1,2}                   Verbose. 0: nothing. 1: basic. 2: extended. Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-merge-images">
+<h3>sct_merge_images<a class="headerlink" href="#sct-merge-images" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Merge images to the same space
+
+USAGE
+sct_merge_images -i &lt;list of: file&gt; -d &lt;file&gt; -w &lt;list of: file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;list of: file&gt;           Input images                  
+ -d &lt;file&gt;                    Destination image             
+ -w &lt;list of: file&gt;           List of warping fields from input images to destination image
+
+OPTIONAL ARGUMENTS
+ -x &lt;str&gt;                     interpolation for warping the input images to the destination image 
+                              Default value = linear
+ -o &lt;file_output&gt;             Output image Default value = merged_images.nii.gz
+MISC
+ -r {0,1}                     Remove temporary files. Default value = 1
+ -v {0,1,2}                   Verbose: 0 = nothing, 1 = classic, 2 = expended Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-nifti-tool">
+<h3>sct_nifti_tool<a class="headerlink" href="#sct-nifti-tool" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>usage: sct_nifti_tool [-h] {textconv} ...
+
+NIFTI tool
+
+positional arguments:
+  {textconv}  the command; type &quot;../../../bin/sct_nifti_tool COMMAND -h&quot; for command-specific help
+    textconv  Get a string representation of a nifti file
+
+optional arguments:
+  -h, --help  show this help message and exit
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-pipeline">
+<h3>sct_pipeline<a class="headerlink" href="#sct-pipeline" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Run a specific SCT function in a list of subjects countained within a given folder. Multiple 
+parameters can be selected.
+  Exemple of command:
+  sct_pipeline -f sct_propseg -d /Users/julien/data/sct_test_function -p \&quot;-i t2/t2.nii.gz -c 
+    t2&quot;,&quot;-i t1/t1.nii.gz -c t1\&quot;
+
+USAGE
+sct_pipeline -f &lt;str&gt; -d &lt;folder&gt;
+
+MANDATORY ARGUMENTS
+ -f &lt;str&gt;                     Function to test.             
+ -d &lt;folder&gt;                  Dataset directory.            
+
+OPTIONAL ARGUMENTS
+ -p &lt;str&gt;                     Arguments to pass to the function that is tested. Please put 
+                              double-quotes if there are spaces in the list of parameters.
+                                Image paths must be contains in the arguments list.
+ -subj &lt;str&gt;                  Choose the subjects to process based on center, study, [...] to 
+                              select the testing dataset
+                                Syntax:  field_1=val1,val2:field_2=val3:field_3=val4,val5
+ -subj-file &lt;file&gt;            Excel spreadsheet containing database information (center, study, 
+                              subject, demographics, ...). If this field is empty, it will search 
+                              for an xls file located in the database folder. If no xls file is 
+                              present, all subjects will be selected.
+ -cpu-nb &lt;int&gt;                Number of CPU used for testing. 0: no multiprocessing. If not 
+                              provided, it uses all the available cores. Default value = 1
+ -log {0,1}                   Redirects Terminal verbose to log file. Default value = 1
+ -email &lt;list of: str&gt;        Email information to send results. Fields are assigned with &quot;=&quot; and 
+                              are separated with &quot;,&quot;:
+                                email_to: address to send email to
+                                email_from: address to send email from (default value is: 
+                                  spinalcordtoolbox@gmail.com)
+                                passwd_from: password for email_from
+ -v {0,1,2}                   Verbose. 0: nothing, 1: basic, 2: extended. Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-process-segmentation">
+<h3>sct_process_segmentation<a class="headerlink" href="#sct-process-segmentation" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+This program is used to get the centerline of the spinal cord of a subject by using one of the 
+three methods describe in the -method flag .
+
+USAGE
+sct_process_segmentation -i &lt;image_nifti&gt; -p {centerline,label-vert,length,csa,shape}
+
+MANDATORY ARGUMENTS
+ -i &lt;image_nifti&gt;             Spinal Cord segmentation      
+ -p {centerline,label-vert,length,csa,shape}type of process to be performed:
+                                - centerline: extract centerline as binary file.
+                                - label-vert: Transform segmentation into vertebral level using a 
+                                  file that contains labels with disc value (flag: -discfile)
+                                - length: compute length of the segmentation.
+                                - csa: computes cross-sectional area by counting pixels in each  
+                                  slice and then geometrically adjusting using centerline orientati
+                                  on. Outputs:
+                                  - angle_image.nii.gz: the cord segmentation (nifti file) where 
+                                  each slice&#39;s value is equal to the CSA (mm^2),
+                                  - csa_image.nii.gz: the cord segmentation (nifti file) where each 
+                                  slice&#39;s value is equal to the angle (in degrees) between the spi
+                                  nal cord centerline and the inferior-superior direction,
+                                  - csa_per_slice.txt: a CSV text file with z (1st column), CSA in 
+                                  mm^2 (2nd column) and angle with respect to the I-S direction
+                                   in degrees (3rd column),
+                                  - csa_per_slice.pickle: a pickle file with the same results as 
+                                  &quot;csa_per_slice.txt&quot; recorded in a DataFrame (panda structure) t
+                                  hat can be reloaded afterwrds,
+                                  - and if you select the options -z or -vert, csa_mean and 
+                                  csa_volume: mean CSA and volume across the selected slices
+                                   or vertebral levels is ouptut in CSV text files, an MS Excel file
+                                  s and a pickle files.
+                                - shape: compute spinal shape properties, using scikit-image region 
+                                  measures, including:
+                                  - AP and RL diameters
+                                  - ratio between AP and RL diameters
+                                  - spinal cord area
+                                  - eccentricity: Eccentricity of the ellipse that has the same 
+                                  second-moments as the spinal cord. The eccentricity is the ratio
+                                   of the focal distance (distance between focal points) over th
+                                  e major axis length. The value is in the interval [0, 1). When i
+                                  t is 0, the ellipse becomes a circle.
+                                  - equivalent diameter: The diameter of a circle with the same 
+                                  area as the spinal cord.
+                                  - orientation: angle (in degrees) between the AP axis of the 
+                                  spinal cord and the AP axis of the image
+                                  - solidity: ratio of positive (spinal cord) over null 
+                                  (background) pixels that are contained in the convex hull region. 
+                                  The convex hull region is the smallest convex polygon that surro
+                                  und all positive pixels in the image.
+
+OPTIONAL ARGUMENTS
+Optional Arguments
+ -ofolder &lt;folder_creation&gt;   In case you choose the option &quot;-p csa&quot;, this option allows you to 
+                              specify the output folder for the result files. If this folder does 
+                              not exist, it will be created, otherwise the result files will be 
+                              output in the pre-existing folder.
+ -overwrite &lt;int&gt;             In the case you specified, in flag &quot;-ofolder&quot;, a pre-existing folder 
+                              that already includes a .xls result file (see flags &quot;-p csa&quot; and &quot;-z&quot; 
+                              or &quot;-vert&quot;), this option will allow you to overwrite the .xls file 
+                              (&quot;-overwrite 1&quot;) or to add the results to it (&quot;-overwrite 0&quot;).
+ -z &lt;str&gt;                     Slice range to compute the CSA across (requires &quot;-p csa&quot;).
+ -vert &lt;str&gt;                  Vertebral levels to compute the CSA across (requires &quot;-p csa&quot;). 
+                              Example: 2:9 for C2 to T2.
+ -vertfile &lt;str&gt;              Vertebral labeling file. Only use with flag -vert Default value = 
+                              ./label/template/PAM50_levels.nii.gz
+ -discfile &lt;image_nifti&gt;      Disc labeling. Only use with -p label-vert
+ -r {0,1}                     Removes the temporary folder and debug folder used for the algorithm 
+                              at the end of execution Default value = 1
+ -size &lt;int&gt;                  Window size (in mm) for smoothing CSA. 0 for no smoothing.
+ -a {hanning,nurbs}           Algorithm for curve fitting. Default value = nurbs
+ -no-angle {0,1}              0: angle correction for csa computation. 1: no angle correction. 
+                              Default value = 0
+ -use-image-coord {0,1}       0: physical coordinates are used to compute CSA. 1: image coordinates 
+                              are used to compute CSA.
+                                Physical coordinates are less prone to instability in CSA 
+                                  computation and should be preferred. Default value = 0
+ -v {0,1,2}                   1: display on, 0: display off (default) Default value = 1
+ -h                           display this help
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-propseg">
+<span id="id4"></span><h3>sct_propseg<a class="headerlink" href="#sct-propseg" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+This program segments automatically the spinal cord on T1- and T2-weighted images, for any field of 
+view. You must provide the type of contrast, the image as well as the output folder path.
+  The segmentation follows the spinal cord centerline, which is provided by an automatic tool: 
+    Optic. The initialization of the segmentation is made on the median slice of the centerline, 
+    and can be ajusted using the -init parameter. The initial radius of the tubular mesh that 
+    will be propagated should be adapted to size of the spinal cord on the initial propagation slice.
+  Primary output is the binary mask of the spinal cord segmentation. This method must provide VTK 
+    triangular mesh of the segmentation (option -mesh). Spinal cord centerline is available as a bin
+    ary image (-centerline-binary) or a text file with coordinates in world refe
+    rential (-centerline-coord).
+  Cross-sectional areas along the spinal cord can be available (-cross).
+  Several tips on segmentation correction can be found on the &quot;Correction Tips&quot; page of the 
+    documentation while advices on parameters adjustments can be found on the &quot;Parameters&quot; page.
+  If the segmentation fails at some location (e.g. due to poor contrast between spinal cord and 
+    CSF), edit your anatomical image (e.g. with fslview) and manually enhance the contrast by add
+    ing bright values around the spinal cord for T2-weighted images (dark values for T1-weighted)
+    . Then, launch the segmentation again.
+
+USAGE
+sct_propseg -i &lt;image_nifti&gt; -c {t1,t2,t2s,dwi}
+
+MANDATORY ARGUMENTS
+ -i &lt;image_nifti&gt;             input image.                  
+ -c {t1,t2,t2s,dwi}           type of image contrast, if your contrast is not in the available 
+                              options (t1, t2, t2s, dwi), use t1 (cord bright / CSF dark) or t2 
+                              (cord dark / CSF bright)
+
+OPTIONAL ARGUMENTS
+General options
+ -ofolder &lt;folder_creation&gt;   output folder.                
+ -down &lt;int&gt;                  down limit of the propagation, default is 0
+ -up &lt;int&gt;                    up limit of the propagation, default is the highest slice of the 
+                              image
+ -r {0,1}                     remove temporary files. Default value = 1
+ -v {0,1}                     1: display on, 0: display off (default) Default value = 1
+ -h                           display this help             
+
+Output options
+ -mesh                        output: mesh of the spinal cord segmentation
+ -centerline-binary           output: centerline as a binary image 
+ -CSF                         output: CSF segmentation      
+ -centerline-coord            output: centerline in world coordinates
+ -cross                       output: cross-sectional areas 
+ -init-tube                   output: initial tubular meshes 
+ -low-resolution-mesh         output: low-resolution mesh   
+
+Options helping the segmentation
+ -init-centerline &lt;image_nifti&gt;filename of centerline to use for the propagation, format .txt or 
+                              .nii, see file structure in documentation.
+                                Replace filename by &#39;viewer&#39; to use interactive viewer for 
+                                  providing centerline. Ex: -init-centerline viewer
+ -init &lt;float&gt;                axial slice where the propagation starts, default is middle axial 
+                              slice
+ -init-mask &lt;image_nifti&gt;     mask containing three center of the spinal cord, used to initiate the 
+                              propagation.
+                                Replace filename by &#39;viewer&#39; to use interactive viewer for 
+                                  providing mask. Ex: -init-mask viewer
+ -mask-correction &lt;image_nifti&gt;mask containing binary pixels at edges of the spinal cord on which 
+                              the segmentation algorithm will be forced to register the surface. 
+                              Can be used in case of poor/missing contrast between spinal cord and 
+                              CSF or in the presence of artefacts/pathologies.
+ -radius &lt;float&gt;              approximate radius (in mm) of the spinal cord, default is 4
+ -nbiter &lt;int&gt;                stop condition (affects only the Z propogation): number of iteration 
+                              for the propagation for both direction, default is 200
+ -max-area &lt;float&gt;            [mm^2], stop condition (affects only the Z propogation): maximum 
+                              cross-sectional area, default is 120
+ -max-deformation &lt;float&gt;     [mm], stop condition (affects only the Z propogation): maximum 
+                              deformation per iteration, default is 2.5
+ -min-contrast &lt;float&gt;        [intensity value], stop condition (affects only the Z propogation): 
+                              minimum local SC/CSF contrast, default is 50
+ -d &lt;float&gt;                   trade-off between distance of most promising point (d is high) and 
+                              feature strength (d is low), default depend on the contrast. Range of 
+                              values from 0 to 50. 15-25 values show good results, default is 10
+ -distance-search &lt;float&gt;     maximum distance of optimal points computation along the surface 
+                              normals. Range of values from 0 to 30, default is 15
+ -alpha &lt;float&gt;               trade-off between internal (alpha is high) and external (alpha is 
+                              low) forces. Range of values from 0 to 50, default is 25
+ -qc &lt;folder_creation&gt;        The path where the quality control generated content will be saved
+ -igt &lt;image_nifti&gt;           File name of ground-truth segmentation.
+ -detect-nii                  output: spinal cord detection as a nifti image Deprecated argument!
+ -detect-png                  output: spinal cord detection as a PNG image Deprecated argument!
+ -detect-n &lt;int&gt;              number of axial slices computed in the detection process, default is 
+                              4 Deprecated argument!
+ -detect-gap &lt;int&gt;            gap along Z direction (in mm) for the detection process, default is 4 
+                              Deprecated argument!
+ -init-validation             enable validation on spinal cord detection based on discriminant 
+                              analysis Deprecated argument!
+</pre></div>
+</div>
+<p>Notes:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://sourceforge.net/p/spinalcordtoolbox/wiki/correction_PropSeg/">https://sourceforge.net/p/spinalcordtoolbox/wiki/correction_PropSeg/</a></li>
+</ul>
+</div>
+<div class="section" id="sct-register-graymatter">
+<h3>sct_register_graymatter<a class="headerlink" href="#sct-register-graymatter" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Registration function to improve the template registration by accounting for the gray and white 
+matter shape using a multi-label approach. Output is a warping field from the template to the 
+target image accounting for the gray matter shape. If -winv is used, output also includes the 
+inverse warping field (from the target image to the template).
+
+USAGE
+sct_register_graymatter -gm &lt;file&gt; -wm &lt;file&gt; -w &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -gm &lt;file&gt;                   Gray matter automatic segmentation
+ -wm &lt;file&gt;                   White matter automatic segmentation
+ -w &lt;file&gt;                    Warping field: [template -&gt; anat]
+
+OPTIONAL ARGUMENTS
+ -t &lt;folder&gt;                  Path to template (registered on target image) to select the GM and WM 
+                              files from the template. Template files must be in path/template/ and 
+                              include &quot;gm&quot; (resp. &quot;wm&quot;) in the file name. Default value = label/
+ -winv &lt;file&gt;                 Input the inverse warping field [anat -&gt; template] if you need to 
+                              output the corrected inverse warping field.
+ -param &lt;str&gt;                 Parameters for the multimodal registration between multilabel images 
+                              Default value = 
+                              step=1,type=seg,
+                              algo=centermassr
+                              ot,metric=MeanSq
+                              uares:step=2,typ
+                              e=im,algo=syn,me
+                              tric=MeanSquares
+                              ,iter=10,smooth=
+                              0,shrink=2:step=
+                              3,type=im,algo=bsplinesyn,metric=MeanSquares,iter=5,smooth=0
+ -template-original &lt;file&gt;    File of the template in it&#39;s original space. Only needed if you are 
+                              using a custom template and flag -winv. It will be used as a 
+                              destination to concatenate the inverse warping field.
+
+OUTPUT OTIONS
+ -ofolder &lt;folder_creation&gt;   Path to an output folder      
+
+VALIDATION: Use both flags for validation.
+ -manual-gm &lt;file&gt;            Manual gray matter segmentation on the target image. 
+ -sc &lt;file&gt;                   Spinal cord segmentation on the target image. 
+
+MISC
+ -qc {0,1}                    Output images for quality control. Default value = 1
+ -r {0,1}                     Remove temporary files. Default value = 1
+ -v {0,1,2}                   verbose: 0 = nothing, 1 = classic, 2 = expended Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-register-multimodal">
+<h3>sct_register_multimodal<a class="headerlink" href="#sct-register-multimodal" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+This program co-registers two 3D volumes. The deformation is non-rigid and is constrained along Z 
+direction (i.e., axial plane). Hence, this function assumes that orientation of the destination 
+image is axial (RPI). If you need to register two volumes with large deformations and/or different 
+contrasts, it is recommended to input spinal cord segmentations (binary mask) in order to achieve 
+maximum robustness. The program outputs a warping field that can be used to register other images 
+to the destination image. To apply the warping field to another image, use sct_apply_transfo
+
+USAGE
+sct_register_multimodal -i &lt;file&gt; -d &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    Image source.                 
+ -d &lt;file&gt;                    Image destination.            
+
+OPTIONAL ARGUMENTS
+ -iseg &lt;file&gt;                 Segmentation source.          
+ -dseg &lt;file&gt;                 Segmentation destination.     
+ -ilabel &lt;file&gt;               Labels source.                
+ -dlabel &lt;file&gt;               Labels destination.           
+ -initwarp &lt;file&gt;             Initial warping field to apply to the source image.
+ -initwarpinv &lt;file&gt;          Initial inverse warping field to apply to the destination image (only 
+                              use if you wish to generate the dest-&gt;src warping field).
+ -m &lt;file&gt;                    Mask that can be created with sct_create_mask to improve accuracy 
+                              over region of interest. This mask will be used on the destination 
+                              image.
+ -o &lt;file_output&gt;             Name of output file.          
+ -owarp &lt;file_output&gt;         Name of output forward warping field.
+ -param &lt;list of: str&gt;        Parameters for registration. Separate arguments with &quot;,&quot;. Separate 
+                              steps with &quot;:&quot;.
+                                step: &lt;int&gt; Step number (starts at 1, except for type=label).
+                                type: {im,seg,label} type of data used for registration. Use 
+                                  type=label only at step=0.
+                                algo: Default=syn
+                                  translation: translation in X-Y plane (2dof)
+                                  rigid: translation + rotation in X-Y plane (4dof)
+                                  affine: translation + rotation + scaling in X-Y plane (6dof)
+                                  syn: non-linear symmetric normalization
+                                  bsplinesyn: syn regularized with b-splines
+                                  slicereg: regularized translations (see: goo.gl/Sj3ZeU)
+                                  centermass: slicewise center of mass alignment (seg only).
+                                  centermassrot: slicewise center of mass and PCA-based rotation 
+                                  alignment (seg only)
+                                  columnwise: R-L scaling followed by A-P columnwise alignment (seg 
+                                  only).
+                                slicewise: &lt;int&gt; Slice-by-slice 2d transformation. Default=0
+                                metric: {CC,MI,MeanSquares}. Default=MeanSquares
+                                iter: &lt;int&gt; Number of iterations. Default=10
+                                shrink: &lt;int&gt; Shrink factor (only for syn/bsplinesyn). Default=1
+                                smooth: &lt;int&gt; Smooth factor (in mm). Note: if 
+                                  algo={centermassrot,columnwise} the smoothing kernel is: SxS
+                                  x0. Otherwise it is SxSxS. Default=0
+                                laplacian: &lt;int&gt; Laplacian filter. Default=0
+                                gradStep: &lt;float&gt; Gradient step. Default=0.5
+                                deformation: ?x?x?: Restrict deformation (for ANTs algo). Replace ? 
+                                  by 0 (no deformation) or 1 (deformation). Default=1x1x0
+                                init: Initial translation alignment based on:
+                                  geometric: Geometric center of images
+                                  centermass: Center of mass of images
+                                  origin: Physical origin of images
+                                poly: &lt;int&gt; Polynomial degree of regularization (only for 
+                                  algo=slicereg,centermassrot). Default=5
+                                smoothWarpXY: &lt;int&gt; Smooth XY warping field (only for 
+                                  algo=columnwize). Default=2
+                                pca_eigenratio_th: &lt;int&gt; Min ratio between the two eigenvalues for 
+                                  PCA-based angular adjustment (only for algo=centermassro
+                                  t). Default=1.6
+                                dof: &lt;str&gt; Degree of freedom for type=label. Separate with &#39;_&#39;. 
+                                  Default=Tx_Ty_Tz_Rx_Ry_Rz
+                                
+ -identity {0,1}              just put source into destination (no optimization). Default value = 0
+ -z &lt;int&gt;                     size of z-padding to enable deformation at edges when using SyN. 
+                              Default value = 5
+ -x {nn,linear,spline}        Final interpolation. Default value = linear
+ -ofolder &lt;folder_creation&gt;   Output folder                 
+ -igt &lt;image_nifti&gt;           File name of ground-truth registered data (nifti).
+ -r {0,1}                     Remove temporary files. Default value = 1
+ -v {0,1,2}                   Verbose. Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-register-to-template">
+<h3>sct_register_to_template<a class="headerlink" href="#sct-register-to-template" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Register anatomical image to the template.
+  
+  To register a subject to the template, try the default command:
+  sct_register_to_template -i data.nii.gz -s data_seg.nii.gz -l data_labels.nii.gz
+  If this default command does not produce satisfactory results, please see: 
+    https://sourceforge.net/p/spinalcordtoolbox/wiki/registration_tricks/
+  
+  To register the template to a subject, you need to use &quot;-ref subject&quot;. Example below:
+  sct_register_to_template -i data.nii.gz -s data_seg.nii.gz -l data_labels.nii.gz -ref subject 
+    -pa
+    ram step=1,type=seg,algo=centermassrot,smooth=0:step=2,type=seg,algo=columnwise,smooth=0,smoothWarpXY=2
+
+USAGE
+sct_register_to_template -i &lt;file&gt; -s &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    Anatomical image.             
+ -s &lt;file&gt;                    Spinal cord segmentation.     
+
+OPTIONAL ARGUMENTS
+ -l &lt;file&gt;                    Labels. See: 
+                              http://sourceforge.net/p/spinalcordtoolbox/wiki/create_labels/
+ -ldisc &lt;file&gt;                Labels centered at disks instead of mid-vertebral bodies. Several 
+                              labels are possible (minimum 1). E.g.: Value=3 corresponds to C2-C3 
+                              disc. If only one label is used, no Z-scaling is performed. If more 
+                              than 2 labels are used, then non-linear Z-scaling is performed (NOT 
+                              IMPLEMENTED YET-- ADD LINK TO PAPER BEN).
+ -ofolder &lt;folder_creation&gt;   Output folder.                
+ -t &lt;folder&gt;                  Path to template. Default value = ../../../data/PAM50
+ -c {t1,t2,t2s}               Contrast to use for registration. Default value = t2
+ -ref {template,subject}      Reference for registration: template: subject-&gt;template, subject: 
+                              template-&gt;subject. Default value = template
+ -param &lt;list of: str&gt;        Parameters for registration (see sct_register_multimodal). Default:   
+                                                  
+                                --
+                                step=0
+                                type=label
+                                dof=Tx_Ty_Tz_Sz                      
+                                --
+                                step=1
+                                type=seg
+                                algo=centermass
+                                metric=MeanSquares
+                                iter=10
+                                smooth=2
+                                gradStep=0.5
+                                slicewise=0
+                                smoothWarpXY=2
+                                pca_eigenratio_th=1.6                      
+                                --
+                                step=2
+                                type=seg
+                                algo=bsplinesyn
+                                metric=MeanSquares
+                                iter=3
+                                smooth=1
+                                gradStep=0.5
+                                slicewise=0
+                                smoothWarpXY=2
+                                pca_eigenratio_th=1.6
+ -param-straighten &lt;str&gt;      Parameters for straightening (see sct_straighten_spinalcord).
+ -qc &lt;folder_creation&gt;        The path where the quality control generated content will be saved
+ -igt &lt;image_nifti&gt;           File name of ground-truth template cord segmentation (binary nifti).
+ -r {0,1}                     Remove temporary files. Default value = 1
+ -v {0,1,2}                   Verbose. 0: nothing. 1: basic. 2: extended. Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-resample">
+<h3>sct_resample<a class="headerlink" href="#sct-resample" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Anisotropic resampling of 3D or 4D data.
+
+USAGE
+sct_resample -i &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    Image to segment. Can be 3D or 4D. (Cannot be 2D)
+
+OPTIONAL ARGUMENTS
+TYPE OF THE NEW SIZE INPUT : with a factor of resampling, in mm or in number of voxels
+Please choose only one of the 3 options.
+ -f &lt;str&gt;                     Resampling factor in each dimensions (x,y,z). Separate with &quot;x&quot;
+                                For 2x upsampling, set to 2. For 2x downsampling set to 0.5
+ -mm &lt;str&gt;                    New resolution in mm. Separate dimension with &quot;x&quot;
+ -vox &lt;str&gt;                   Resampling size in number of voxels in each dimensions (x,y,z). 
+                              Separate with &quot;x&quot;
+MISC
+ -x {nn,linear,spline}        Interpolation method. Default value = linear
+ -o &lt;file_output&gt;             Output file name              
+ -v {0,1,2}                   verbose: 0 = nothing, 1 = classic, 2 = expended. Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-segment-graymatter">
+<span id="id5"></span><h3>sct_segment_graymatter<a class="headerlink" href="#sct-segment-graymatter" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Segmentation of the white and gray matter. The segmentation is based on a multi-atlas method that 
+uses a dictionary of pre-segmented gray matter images (already included in SCT) and finds the most 
+similar images for identifying the gray matter using label fusion approach. The model used by this 
+method contains: a template of the white/gray matter segmentation along the cervical spinal cord, 
+and a PCA reduced space to describe the variability of intensity in that template. This method was 
+inspired from [Asman et al., Medical Image Analysis 2014] and features the following additions:
+  - possibility to add information from vertebral levels for improved accuracy
+  - intensity normalization of the image to segment (allows the segmentation of any kind of 
+    contrast)
+  - pre-registration based on non-linear transformations
+
+USAGE
+sct_segment_graymatter -i &lt;file&gt; -s &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    Image to segment              
+ -s &lt;file&gt;                    Spinal cord segmentation      
+
+OPTIONAL ARGUMENTS
+SEGMENTATION OPTIONS
+ -vertfile &lt;str&gt;              Labels of vertebral levels used as prior for the segmentation. This 
+                              could either be an image (e.g., label/template/PAM50_levels.nii.gz) 
+                              or a text file that specifies &quot;slice,level&quot; at each line. Example:
+                                0,3
+                                1,3
+                                2,4
+                                3,4
+                                4,4
+                                 Default value = label/template/PAM50_levels.nii.gz
+ -denoising {0,1}             1: Adaptative denoising from F. Coupe algorithm, 0: no  WARNING: It 
+                              affects the model you should use (if denoising is applied to the 
+                              target, the model should have been computed with denoising too) 
+                              Default value = 1
+ -normalization {0,1}         Normalization of the target image&#39;s intensity using median intensity 
+                              values of the WM and the GM, recomended with MT images or other types 
+                              of contrast than T2* Default value = 1
+ -p &lt;str&gt;                     Registration parameters to register the image to segment on the model 
+                              data. Use the same format as for sct_register_to_template and 
+                              sct_register_multimodal. Default value = 
+                              step=1,type=seg,algo=centermassrot,metric
+                              =MeanSquares,smooth=2,poly=0,iter=1:step=
+                              2,type=seg,algo=columnwise,metric=MeanSquares,smooth=1,iter=1
+ -w-levels &lt;float&gt;            Weight parameter on the level differences to compute the similarities 
+                              Default value = 2.5
+ -w-coordi &lt;float&gt;            Weight parameter on the euclidean distance (based on images 
+                              coordinates in the reduced sapce) to compute the similarities  
+                              Default value = 0.0065
+ -thr-sim &lt;float&gt;             Threshold to select the dictionary slices most similar to the slice 
+                              to segment (similarities are normalized to 1) Default value = 0.0005
+ -model &lt;folder&gt;              Path to the computed model    
+
+OUTPUT OPTIONS
+ -res-type {bin,prob}         Type of result segmentation : binary or probabilistic Default value = 
+                              prob
+ -ratio {0,slice,level}       Compute GM/WM CSA ratio by slice or by vertebral level (average 
+                              across levels). For no computation of ratio, set to 0. Default value 
+                              = 0
+ -ofolder &lt;folder_creation&gt;   Output folder Default value = ./
+
+QC OPTIONS
+ -ref &lt;file&gt;                  Compute DICE coefficient, Hausdorff&#39;s and median distances between 
+                              output segmentation and gold-standard segmentation specified here
+
+MISC
+ -qc &lt;folder_creation&gt;        The path where the quality control generated content will be saved
+ -r {0,1}                     Remove temporary files. Default value = 1
+ -v {0,1,2}                   Verbose: 0 = nothing, 1 = classic, 2 = expended Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-smooth-spinalcord">
+<h3>sct_smooth_spinalcord<a class="headerlink" href="#sct-smooth-spinalcord" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Smooth the spinal cord along its centerline. Steps are:
+  1) Spinal cord is straightened (using centerline),
+  2) a Gaussian kernel is applied in the superior-inferior direction,
+  3) then cord is de-straightened as originally.
+  
+
+USAGE
+sct_smooth_spinalcord -i &lt;file&gt; -s &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    Image to smooth               
+ -s &lt;file&gt;                    Spinal cord centerline or segmentation
+
+OPTIONAL ARGUMENTS
+ -smooth &lt;int&gt;                Sigma of the smoothing Gaussian kernel (in mm). Default value = 3
+MISC
+ -r {0,1}                     Remove temporary files. Default value = 1
+ -v {0,1,2}                   verbose: 0 = nothing, 1 = classic, 2 = expended Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-straighten-spinalcord">
+<h3>sct_straighten_spinalcord<a class="headerlink" href="#sct-straighten-spinalcord" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+This program takes as input an anatomic image and the centerline or segmentation of its spinal cord 
+(that you can get using sct_get_centerline.py or sct_segmentation_propagation) and returns the 
+anatomic image where the spinal cord was straightened.
+
+USAGE
+sct_straighten_spinalcord -i &lt;image_nifti&gt; -s &lt;image_nifti&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;image_nifti&gt;             input image.                  
+ -s &lt;image_nifti&gt;             centerline or segmentation.   
+
+OPTIONAL ARGUMENTS
+ -ref &lt;image_nifti&gt;           reference centerline (or segmentation) on which to register the input 
+                              image, using the same philosophy as straightening procedure..
+ -disks-input &lt;image_nifti&gt;                                 
+ -disks-ref &lt;image_nifti&gt;                                   
+ -disable-straight2curved     Disable straight to curved transformation computation.
+ -disable-curved2straight     Disable curved to straight transformation computation.
+ -resample &lt;float&gt;            Isotropic resolution of the straightening output, in millimeters.
+                                Resampling to lower resolution decreases computational time while 
+                                  decreasing straightening accuracy.
+                                To keep native resolution, set this option to 0.
+                                
+ -o &lt;file_output&gt;             straightened file             
+ -ofolder &lt;folder_creation&gt;   Output folder (all outputs will go there).
+ -x {nn,linear,spline}        Final interpolation. Default value = spline
+ -r {0,1}                     remove temporary files. Default value = 1
+ -v {0,1,2}                   Verbose. 0: nothing, 1: basic, 2: extended. Default value = 1
+ -param &lt;list of: str&gt;        Parameters for spinal cord straightening. Separate arguments with 
+                              &#39;,&#39;.
+                                algo_fitting: {hanning,nurbs} algorithm for curve fitting. 
+                                  Default=nurbs
+                                precision: [1.0,inf[. Precision factor of straightening, related to 
+                                  the number of slices. Increasing this parameter increases 
+                                  the precision along with increased computational time. Not tak
+                                  en into account with hanning fitting method. Default=2
+                                threshold_distance: [0.0,inf[. Threshold at which voxels are not 
+                                  considered into displacement. Increase this threshold if the image
+                                   is blackout around the spinal cord too much. Default=10
+                                accuracy_results: {0, 1} Disable/Enable computation of accuracy 
+                                  results after straightening. Default=0
+                                template_orientation: {0, 1} Disable/Enable orientation of the 
+                                  straight image to be the same as the template. Default=0
+ -qc &lt;folder_creation&gt;        The path where the quality control generated content will be saved
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-testing">
+<h3>sct_testing<a class="headerlink" href="#sct-testing" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Crash and integrity testing for functions of the Spinal Cord Toolbox. Internet connection is 
+required for downloading testing data.
+
+USAGE
+sct_testing
+
+OPTIONAL ARGUMENTS
+ -f &lt;str&gt;                     Test this specific script (do not add extension).
+ -d {0,1}                     Download testing data.        
+ -p &lt;folder&gt;                  Path to testing data. NB: no need to set if using &quot;-d 1&quot; Default 
+                              value = sct_testing_data
+ -r {0,1}                     Remove temporary files. Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-utils">
+<h3>sct_utils<a class="headerlink" href="#sct-utils" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>(&#39;git&#39;, u&#39;a4a70f88670ca6383acc85cc58e7455e0cc4cef8&#39;, u&#39;cJ-sphinx&#39;, u&#39;dev&#39;)
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-viewer">
+<h3>sct_viewer<a class="headerlink" href="#sct-viewer" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Volume Viewer
+
+USAGE
+sct_viewer -i &lt;list of: file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;list of: file&gt;           Images to display.            
+
+OPTIONAL ARGUMENTS
+ -mode {viewer,axial}         Display mode.
+                                viewer: standard three-window viewer.
+                                axial: one-window viewer for manual centerline.
+                                 Default value = viewer
+ -param &lt;list of: str&gt;        Parameters for visualization. Separate images with &quot;,&quot;. Separate 
+                              parameters with &quot;:&quot;.
+                                id: number of image in the &quot;-i&quot; list
+                                cmap: image colormap
+                                interp: image interpolation. Accepts: [&#39;nearest&#39; | &#39;bilinear&#39; | 
+                                  &#39;bicubic&#39; | &#39;spline16&#39; | &#39;spline36&#39; | &#39;hanning&#39; | &#39;hamming
+                                  &#39; | &#39;hermite&#39; | &#39;kaiser&#39; | &#39;quadric&#39; | &#39;catrom&#39; | &#39;gaussian&#39; | &#39;be
+                                  ssel&#39; | &#39;mitchell&#39; | &#39;sinc&#39; | &#39;lanczos&#39; | &#39;none&#39; |]
+                                vmin:
+                                vmax:
+                                vmean:
+                                perc: 
+ -v {0,1,2}                   Verbose. 0: nothing. 1: basic. 2: extended. Default value = 0
+</pre></div>
+</div>
+</div>
+<div class="section" id="sct-warp-template">
+<h3>sct_warp_template<a class="headerlink" href="#sct-warp-template" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+This function warps the template and all atlases to a given image (e.g. fMRI, DTI, MTR, etc.).
+
+USAGE
+sct_warp_template -d &lt;file&gt; -w &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -d &lt;file&gt;                    destination image the template will be warped into
+ -w &lt;file&gt;                    warping field                 
+
+OPTIONAL ARGUMENTS
+ -a {0,1}                     warp atlas of white matter Default value = 1
+ -s {0,1}                     warp spinal levels. Default value = 0
+ -ofolder &lt;folder_creation&gt;   name of output folder. Default value = label
+ -t &lt;folder&gt;                  Path to template. Default value = ../../../data/PAM50
+ -qc &lt;folder_creation&gt;        The path where the quality control generated content will be saved
+ -v {0,1}                     Verbose. Default value = 1
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="system-commands">
+<h2><a class="toc-backref" href="#id8">System Commands</a><a class="headerlink" href="#system-commands" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="sct-check-dependencies">
+<h3>sct_check_dependencies<a class="headerlink" href="#sct-check-dependencies" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>usage: sct_check_dependencies [-h] [--complete] [--generate-log]
+
+Check the installation and environment variables of the toolbox and its dependencies.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --complete, -c        Complete test.
+  --generate-log, -log, -l
+                        Generate log file.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="internal-commands">
+<h2><a class="toc-backref" href="#id9">Internal Commands</a><a class="headerlink" href="#internal-commands" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="isct-check-detection">
+<h3>isct_check_detection<a class="headerlink" href="#isct-check-detection" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>USAGE: 
+This script check if the point contained in inputdata is in the spinal cord segmentation.
+  isct_check_detection -i &lt;inputdata&gt; -t &lt;segmentationdata&gt;
+
+MANDATORY ARGUMENTS
+  -i           input volume. Contains one point
+  -t           segmentation volume.
+
+OPTIONAL ARGUMENTS
+  -h           help. Show this message.
+</pre></div>
+</div>
+</div>
+<div class="section" id="isct-convert-binary-to-trilinear">
+<h3>isct_convert_binary_to_trilinear<a class="headerlink" href="#isct-convert-binary-to-trilinear" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>isct_convert_binary_to_trilinear
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Part of the Spinal Cord Toolbox &lt;https://sourceforge.net/projects/spinalcordtoolbox&gt;
+
+DESCRIPTION
+  Convert binary spinal cord segmentation to trilinear-interpolated segmentation. Instead of simply
+  re-interpolating the image, this function oversamples the binary mask, smoothes along centerline
+  (to remove step-effects), then downsamples back to native resolution.
+
+USAGE
+  isct_convert_binary_to_trilinear -i &lt;bin_seg&gt;
+
+MANDATORY ARGUMENTS
+  -i &lt;bin_seg&gt;      binary segmentation of spinal cord
+
+OPTIONAL ARGUMENTS
+  -s                sigma of the smoothing Gaussian kernel (in voxel). Default=5
+  -r {0,1}          remove temporary files. Default=1
+  -v {0,1}          verbose. Default=1
+  -h                help. Show this message
+
+EXAMPLE
+  isct_convert_binary_to_trilinear -i segmentation.nii
+</pre></div>
+</div>
+</div>
+<div class="section" id="isct-get-fractional-volume">
+<h3>isct_get_fractional_volume<a class="headerlink" href="#isct-get-fractional-volume" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="isct-minc2volume-viewer">
+<h3>isct_minc2volume-viewer<a class="headerlink" href="#isct-minc2volume-viewer" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>usage: isct_minc2volume-viewer [-h] [-o FNAME_OUT] filename
+
+positional arguments:
+  filename              absolute path of input image
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -o FNAME_OUT, --fname_out FNAME_OUT
+                        absolute path of output image (without image format)
+</pre></div>
+</div>
+</div>
+<div class="section" id="isct-test-ants">
+<h3>isct_test_ants<a class="headerlink" href="#isct-test-ants" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>isct_test_ants
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Part of the Spinal Cord Toolbox &lt;https://sourceforge.net/projects/spinalcordtoolbox&gt;
+
+DESCRIPTION
+  This function test the integrity of ANTs output, given that some versions of ANTs give a wrong BSpline   transform notably when using sct_ANTSUseLandmarkImagesToGetBSplineDisplacementField..
+
+USAGE
+  isct_test_ants
+
+OPTIONAL ARGUMENTS
+  -h                         show this help
+  -r {0, 1}                  remove temp files. Default=1
+  -v {0, 1}                  verbose. Default=1
+</pre></div>
+</div>
+</div>
+<div class="section" id="isct-warpmovie-generator">
+<h3>isct_warpmovie_generator<a class="headerlink" href="#isct-warpmovie-generator" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+This script generates multiple images from a warping field.
+
+USAGE
+isct_warpmovie_generator -i &lt;file&gt; -o &lt;file_output&gt; -d &lt;file&gt; -w &lt;list of: file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    source image (moving). Can be 3D or 4D.
+ -o &lt;file_output&gt;             output file.                  
+ -d &lt;file&gt;                    destination image (fixed). Must be 3D.
+ -w &lt;list of: file&gt;           warping field. If more than one, separate with &#39;,&#39;.
+                                The movie generator currently supports only warping field and not 
+                                  affine transformation.
+
+OPTIONAL ARGUMENTS
+ -n &lt;int&gt;                     number of frames. Default value = 5
+</pre></div>
+</div>
+</div>
+<div class="section" id="msct-base-classes">
+<h3>msct_base_classes<a class="headerlink" href="#msct-base-classes" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="msct-gmseg-utils">
+<h3>msct_gmseg_utils<a class="headerlink" href="#msct-gmseg-utils" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="msct-image">
+<h3>msct_image<a class="headerlink" href="#msct-image" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Image processing functions
+
+USAGE
+msct_image -i &lt;file&gt;
+
+MANDATORY ARGUMENTS
+ -i &lt;file&gt;                    Image input file.             
+
+OPTIONAL ARGUMENTS
+ -o &lt;file_output&gt;             Image output name.
+</pre></div>
+</div>
+</div>
+<div class="section" id="msct-moco">
+<h3>msct_moco<a class="headerlink" href="#msct-moco" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="msct-multiatlas-seg">
+<h3>msct_multiatlas_seg<a class="headerlink" href="#msct-multiatlas-seg" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>DESCRIPTION
+Compute the model for GM segmentation.
+  Dataset should be organized with one folder per subject containing: 
+  	- A WM/GM contrasted image containing &quot;im&quot; in its name
+  	- a segmentation of the SC containing &quot;seg&quot; in its name
+  	- a/several manual segmentation(s) of GM containing &quot;gm&quot; in its/their name(s)
+  	- a file containing vertebral level information as a nifti image or as a text file containing 
+    &quot;level&quot; in its name
+  
+
+USAGE
+msct_multiatlas_seg -path-data &lt;folder&gt;
+
+MANDATORY ARGUMENTS
+ -path-data &lt;folder&gt;          Path to the dataset           
+
+OPTIONAL ARGUMENTS
+ -o &lt;folder_creation&gt;         Output folder Default value = gm_model/
+MODEL PARAMETERS
+ -model-type {pca,isomap}     Type of reduced space (PCA or IsoMap) Default value = pca
+ -k-pca &lt;float&gt;               -ONLY WITH PCA- Percentage of variability to keep in the PCA reduced 
+                              space (between 0 and 1) Default value = 0.95
+ -n-compo-iso &lt;float&gt;         -ONLY WITH ISOMAP- Percentage of components to keep (The total number 
+                              of components is the number of slices in the model). To keep half of 
+                              the components, use 0.5.  Default value = 0.5
+ -n-neighbors-iso &lt;int&gt;       -ONLY WITH ISOMAP- Number of neighbors to consider in the reduced 
+                              space. Default value = 5
+DATA PROCESSING PARAMETERS
+ -denoising {0,1}             Apply non-local means denoising (as implemented in dipy) on data 
+                              Default value = 1
+ -normalization {0,1}         Normalize data intensity using median intensity values of the manual 
+                              WM and the GM Default value = 1
+ -axial-res &lt;float&gt;           Axial resolution to resample data to Default value = 0.3
+ -sq-size &lt;float&gt;             Size of the square centered on SC to crop data (in mm) Default value 
+                              = 22.5
+ -reg-param &lt;str&gt;             Registration parameters to co-register data together Default value = 
+                              step=1,type=seg,algo=centermassrot,metric=MeanSquares,smooth=2,poly=0
+                              ,iter=1:step=2,type=seg,algo=columnwise,metric=MeanSquares,smooth=1,i
+                              ter=1
+Leave One Out Cross Validation
+ -ind-rm &lt;int&gt;                Index of the subject to remove to compute a model for Leave one out 
+                              cross validation Default value = None
+MISC
+ -r {0,1}                     Remove temporary files. Default value = 1
+ -v {0,1,2}                   verbose: 0 = nothing, 1 = classic, 2 = expended Default value = 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="msct-nurbs">
+<h3>msct_nurbs<a class="headerlink" href="#msct-nurbs" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="msct-parser">
+<h3>msct_parser<a class="headerlink" href="#msct-parser" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="msct-pca">
+<h3>msct_pca<a class="headerlink" href="#msct-pca" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="msct-register">
+<h3>msct_register<a class="headerlink" href="#msct-register" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="msct-register-landmarks">
+<h3>msct_register_landmarks<a class="headerlink" href="#msct-register-landmarks" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="msct-shape">
+<h3>msct_shape<a class="headerlink" href="#msct-shape" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="msct-smooth">
+<h3>msct_smooth<a class="headerlink" href="#msct-smooth" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="msct-types">
+<h3>msct_types<a class="headerlink" href="#msct-types" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=neuropoly&repo=spinalcordtoolbox&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">SCT Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Command-Line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development Notes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="support.html" title="previous chapter">Support</a></li>
+      <li>Next: <a href="api.html" title="next chapter">Python API</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, SCT Contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/command-line.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

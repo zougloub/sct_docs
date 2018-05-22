@@ -1,0 +1,315 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Getting Started &#8212; Spinal Cord Toolbox 3.2.2 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '3.2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="SCT Concepts" href="concepts.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="getting-started">
+<span id="id1"></span><h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>To get started using SCT, you may take a look at the <a class="reference internal" href="#batch-processing-example">Batch Processing
+Example</a>, or follow the longer <a class="reference internal" href="#course">Course</a> materials.</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#batch-processing-example" id="id2">Batch Processing Example</a></li>
+<li><a class="reference internal" href="#course" id="id3">Course</a></li>
+<li><a class="reference internal" href="#further-information" id="id4">Further Information</a></li>
+</ul>
+</div>
+<div class="section" id="batch-processing-example">
+<h2><a class="toc-backref" href="#id2">Batch Processing Example</a><a class="headerlink" href="#batch-processing-example" title="Permalink to this headline">¶</a></h2>
+<p>SCT includes a <a class="reference external" href="https://github.com/neuropoly/spinalcordtoolbox/blob/master/batch_processing.sh">batch_processing</a>
+script that will get you started with basic analyses.</p>
+<p>Executing the script will download example data which can be used for
+training purposes:</p>
+<div class="code sh highlight-default"><div class="highlight"><pre><span></span>$ ~/sct_*/batch_processing.sh
+</pre></div>
+</div>
+<p>The script source is reasonably documented:</p>
+<div class="highlight-sh"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#</span>
+<span class="c1"># Example of commands to process multi-parametric data of the spinal cord</span>
+<span class="c1"># For information about acquisition parameters, see: https://osf.io/wkdym/</span>
+<span class="c1"># N.B. The parameters are set for these type of data. With your data, parameters might be slightly different.</span>
+<span class="c1">#</span>
+<span class="c1"># To prevent downloading sct_example_data and run from local folder, run:</span>
+<span class="c1">#   ./batch_processing.sh -nodownload</span>
+
+<span class="c1"># Abort on error</span>
+<span class="nb">set</span> -e
+
+<span class="c1"># Check if users wants to use his own data</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="nv">$@</span> <span class="o">==</span> *<span class="s2">&quot;-nodownload&quot;</span>* <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="nb">echo</span> <span class="s2">&quot;Use local folder.&quot;</span>
+<span class="k">else</span>
+  <span class="c1"># download example data</span>
+  sct_download_data -d sct_example_data
+  <span class="c1"># go in folder</span>
+<span class="k">fi</span>
+<span class="nb">cd</span> sct_example_data
+
+<span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$SCT_BP_QC_FOLDER</span><span class="s2">&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+	<span class="nv">SCT_BP_QC_FOLDER</span><span class="o">=</span>~/qc_batch_processing
+<span class="k">fi</span>
+
+<span class="c1"># Remove QC folder</span>
+<span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$SCT_BP_NO_REMOVE_QC</span><span class="s2">&quot;</span> -a -d <span class="s2">&quot;</span><span class="nv">$SCT_BP_QC_FOLDER</span><span class="s2">&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="nb">echo</span> <span class="s2">&quot;Removing </span><span class="nv">$SCT_BP_QC_FOLDER</span><span class="s2"> folder.&quot;</span>
+  rm -rf <span class="s2">&quot;</span><span class="nv">$SCT_BP_QC_FOLDER</span><span class="s2">&quot;</span>
+<span class="k">fi</span>
+
+<span class="c1"># display starting time:</span>
+<span class="nb">echo</span> <span class="s2">&quot;Started at: </span><span class="k">$(</span>date +%x_%r<span class="k">)</span><span class="s2">&quot;</span>
+
+<span class="nb">set</span> -x
+
+<span class="c1"># t2</span>
+<span class="c1"># ===========================================================================================</span>
+<span class="nb">cd</span> t2
+<span class="c1"># Spinal cord segmentation</span>
+sct_propseg -i t2.nii.gz -c t2 -qc <span class="s2">&quot;</span><span class="nv">$SCT_BP_QC_FOLDER</span><span class="s2">&quot;</span>
+<span class="c1"># Vertebral labeling</span>
+<span class="c1"># tips: for manual initialization of labeling by clicking at disc C2-C3, use flag -initc2</span>
+sct_label_vertebrae -i t2.nii.gz -s t2_seg.nii.gz -c t2 -v <span class="m">2</span> -qc <span class="s2">&quot;</span><span class="nv">$SCT_BP_QC_FOLDER</span><span class="s2">&quot;</span>
+<span class="c1"># Create labels at C2 and C5 vertebral levels</span>
+sct_label_utils -i t2_seg_labeled.nii.gz -vert-body <span class="m">2</span>,5
+<span class="c1"># Register to template</span>
+sct_register_to_template -i t2.nii.gz -s t2_seg.nii.gz -l labels.nii.gz -c t2 -qc <span class="s2">&quot;</span><span class="nv">$SCT_BP_QC_FOLDER</span><span class="s2">&quot;</span>
+<span class="c1"># Warp template without the white matter atlas (we don&#39;t need it at this point)</span>
+sct_warp_template -d t2.nii.gz -w warp_template2anat.nii.gz -a <span class="m">0</span>
+<span class="c1"># Compute average cross-sectional area and volume between C2 and C3 levels</span>
+sct_process_segmentation -i t2_seg.nii.gz -p csa -vert <span class="m">2</span>:3
+<span class="c1"># Compute spinal cord shape information at each slice (e.g. AP/RL diameter, eccentricity, etc.)</span>
+sct_process_segmentation -i t2_seg.nii.gz -p shape
+<span class="c1"># Go back to root folder</span>
+<span class="nb">cd</span> -
+
+
+<span class="c1"># mt</span>
+<span class="c1"># ===========================================================================================</span>
+<span class="nb">cd</span> mt
+<span class="c1"># bring T2 segmentation in MT space to help segmentation (no optimization)</span>
+sct_register_multimodal -i ../t2/t2_seg.nii.gz -d mt1.nii.gz -identity <span class="m">1</span> -x nn
+<span class="c1"># create mask for faster processing</span>
+sct_create_mask -i mt1.nii.gz -p centerline,t2_seg_reg.nii.gz -size 45mm
+<span class="c1"># crop data</span>
+sct_crop_image -i mt1.nii.gz -m mask_mt1.nii.gz -o mt1_crop.nii.gz
+sct_crop_image -i mt0.nii.gz -m mask_mt1.nii.gz -o mt0_crop.nii.gz
+<span class="c1"># segment mt1</span>
+sct_propseg -i mt1_crop.nii.gz -c t2 -init-centerline t2_seg_reg.nii.gz -qc <span class="s2">&quot;</span><span class="nv">$SCT_BP_QC_FOLDER</span><span class="s2">&quot;</span>
+<span class="c1"># Create close mask around spinal cord (for more accurate registration results)</span>
+sct_create_mask -i mt1_crop.nii.gz -p centerline,mt1_crop_seg.nii.gz -size 35mm -f cylinder
+<span class="c1"># Register mt0 on mt1</span>
+<span class="c1"># Tips: here we only use rigid transformation because both images have very similar sequence parameters. We don&#39;t want to use SyN/BSplineSyN to avoid introducing spurious deformations.</span>
+sct_register_multimodal -i mt0_crop.nii.gz -d mt1_crop.nii.gz -param <span class="nv">step</span><span class="o">=</span><span class="m">1</span>,type<span class="o">=</span>im,algo<span class="o">=</span>rigid,slicewise<span class="o">=</span><span class="m">1</span>,metric<span class="o">=</span>CC -m mask_mt1_crop.nii.gz -x spline
+<span class="c1"># Register template to mt1</span>
+<span class="c1"># Tips: here we only use the segmentations due to poor SC/CSF contrast at the bottom slice.</span>
+<span class="c1"># Tips: First step: slicereg based on images, with large smoothing to capture potential motion between anat and mt, then at second step: bpslinesyn in order to adapt the shape of the cord to the mt modality (in case there are distortions between anat and mt).</span>
+sct_register_multimodal -i <span class="nv">$SCT_DIR</span>/data/PAM50/template/PAM50_t2.nii.gz -d mt1_crop.nii.gz -iseg <span class="nv">$SCT_DIR</span>/data/PAM50/template/PAM50_cord.nii.gz -dseg mt1_crop_seg.nii.gz -param <span class="nv">step</span><span class="o">=</span><span class="m">1</span>,type<span class="o">=</span>seg,algo<span class="o">=</span>slicereg,smooth<span class="o">=</span><span class="m">3</span>:step<span class="o">=</span><span class="m">2</span>,type<span class="o">=</span>seg,algo<span class="o">=</span>bsplinesyn,slicewise<span class="o">=</span><span class="m">1</span>,iter<span class="o">=</span><span class="m">3</span> -m mask_mt1_crop.nii.gz -initwarp ../t2/warp_template2anat.nii.gz -initwarpinv ../t2/warp_anat2template.nii.gz
+<span class="c1"># rename warping fields for clarity</span>
+mv warp_PAM50_t22mt1_crop.nii.gz warp_template2mt.nii.gz
+mv warp_mt1_crop2PAM50_t2.nii.gz warp_mt2template.nii.gz
+<span class="c1"># Warp template</span>
+sct_warp_template -d mt1_crop.nii.gz -w warp_template2mt.nii.gz
+
+<span class="c1"># OPTIONAL: SEGMENT GRAY MATTER AND USE IT TO IMPROVE TEMPLATE REGISTRATION</span>
+<span class="c1"># &lt;&lt;&lt;</span>
+<span class="c1"># Segment gray matter</span>
+sct_segment_graymatter -i mt0_crop_reg.nii.gz -s mt1_crop_seg.nii.gz -qc <span class="s2">&quot;</span><span class="nv">$SCT_BP_QC_FOLDER</span><span class="s2">&quot;</span>
+<span class="c1"># Register WM/GM template to WM/GM seg</span>
+sct_register_graymatter -gm mt0_crop_reg_gmseg.nii.gz -wm mt0_crop_reg_wmseg.nii.gz -w warp_template2mt.nii.gz -winv warp_mt2template.nii.gz
+<span class="c1"># rename warping fields for clarity</span>
+mv warp_template2mt_reg_gm.nii.gz warp_template2mt.nii.gz
+mv warp_mt2template_reg_gm.nii.gz warp_mt2template.nii.gz
+<span class="c1"># warp template (this time corrected for internal structure)</span>
+sct_warp_template -d mt1_crop.nii.gz -w warp_template2mt.nii.gz
+<span class="c1"># &gt;&gt;&gt;</span>
+
+<span class="c1"># Compute mtr</span>
+sct_compute_mtr -mt0 mt0_crop_reg.nii.gz -mt1 mt1_crop.nii.gz
+<span class="c1"># Extract MTR within the white matter between C2 and C5</span>
+sct_extract_metric -i mtr.nii.gz -method map -o mtr_in_wm.txt -l <span class="m">51</span> -vert <span class="m">2</span>:5
+<span class="c1"># Once we have register the WM atlas to the subject, we can compute the cross-sectional area (CSA) of the gray and white matter</span>
+sct_process_segmentation -i label/template/PAM50_wm.nii.gz -p csa -vert <span class="m">2</span>:5 -ofolder csa_wm
+sct_process_segmentation -i label/template/PAM50_gm.nii.gz -p csa -vert <span class="m">2</span>:5 -ofolder csa_gm
+<span class="c1"># Bring metric to template space (e.g. for group mapping)</span>
+sct_apply_transfo -i mtr.nii.gz -d <span class="nv">$SCT_DIR</span>/data/PAM50/template/PAM50_t2.nii.gz -w warp_mt2template.nii.gz
+<span class="c1"># Go back to root folder</span>
+<span class="nb">cd</span> -
+
+
+<span class="c1"># dmri</span>
+<span class="c1"># ===========================================================================================</span>
+<span class="nb">cd</span> dmri
+<span class="c1"># bring T2 segmentation in dmri space to create mask (no optimization)</span>
+sct_maths -i dmri.nii.gz -mean t -o dmri_mean.nii.gz
+sct_register_multimodal -i ../t2/t2_seg.nii.gz -d dmri_mean.nii.gz -identity <span class="m">1</span> -x nn
+<span class="c1"># create mask to help moco and for faster processing</span>
+sct_create_mask -i dmri_mean.nii.gz -p centerline,t2_seg_reg.nii.gz -size 35mm
+<span class="c1"># crop data</span>
+sct_crop_image -i dmri.nii.gz -m mask_dmri_mean.nii.gz -o dmri_crop.nii.gz
+<span class="c1"># motion correction</span>
+sct_dmri_moco -i dmri_crop.nii.gz -bvec bvecs.txt
+<span class="c1"># segmentation with propseg</span>
+sct_propseg -i dwi_moco_mean.nii.gz -c dwi -init-centerline t2_seg_reg.nii.gz -qc <span class="s2">&quot;</span><span class="nv">$SCT_BP_QC_FOLDER</span><span class="s2">&quot;</span>
+<span class="c1"># Register template to dwi</span>
+<span class="c1"># Tips: We use the template registered to the MT data in order to account for gray matter segmentation</span>
+<span class="c1"># Tips: again, here, we prefer no stick to rigid registration on segmentation following by slicereg to realign center of mass. If there are susceptibility distortions in your EPI, then you might consider adding a third step with bsplinesyn or syn transformation for local adjustment.</span>
+sct_register_multimodal -i <span class="nv">$SCT_DIR</span>/data/PAM50/template/PAM50_t1.nii.gz -d dwi_moco_mean.nii.gz -iseg <span class="nv">$SCT_DIR</span>/data/PAM50/template/PAM50_cord.nii.gz -dseg dwi_moco_mean_seg.nii.gz -param <span class="nv">step</span><span class="o">=</span><span class="m">1</span>,type<span class="o">=</span>seg,algo<span class="o">=</span>slicereg,smooth<span class="o">=</span><span class="m">5</span>:step<span class="o">=</span><span class="m">2</span>,type<span class="o">=</span>seg,algo<span class="o">=</span>bsplinesyn,metric<span class="o">=</span>MeanSquares,smooth<span class="o">=</span><span class="m">1</span>,iter<span class="o">=</span><span class="m">3</span> -initwarp ../mt/warp_template2mt.nii.gz -initwarpinv ../mt/warp_mt2template.nii.gz
+<span class="c1"># rename warping field for clarity</span>
+mv warp_PAM50_t12dwi_moco_mean.nii.gz warp_template2dmri.nii.gz
+mv warp_dwi_moco_mean2PAM50_t1.nii.gz warp_dmri2template.nii.gz
+<span class="c1"># Warp template and white matter atlas</span>
+sct_warp_template -d dwi_moco_mean.nii.gz -w warp_template2dmri.nii.gz
+<span class="c1"># Compute DTI metrics</span>
+<span class="c1"># Tips: the flag -method &quot;restore&quot; allows you to estimate the tensor with robust fit (see help)</span>
+sct_dmri_compute_dti -i dmri_crop_moco.nii.gz -bval bvals.txt -bvec bvecs.txt
+<span class="c1"># Compute FA within right and left lateral corticospinal tracts from slices 2 to 14 using weighted average method</span>
+sct_extract_metric -i dti_FA.nii.gz -z <span class="m">2</span>:14 -method wa -l <span class="m">4</span>,5 -o fa_in_cst.txt
+<span class="c1"># Bring metric to template space (e.g. for group mapping)</span>
+sct_apply_transfo -i dti_FA.nii.gz -d <span class="nv">$SCT_DIR</span>/data/PAM50/template/PAM50_t2.nii.gz -w warp_dmri2template.nii.gz
+<span class="c1"># Go back to root folder</span>
+<span class="nb">cd</span> -
+
+<span class="nb">set</span> +x
+
+<span class="c1"># Display results (to easily compare integrity across SCT versions)</span>
+<span class="c1"># ===========================================================================================</span>
+<span class="nb">echo</span> <span class="s2">&quot;Ended at: </span><span class="k">$(</span>date +%x_%r<span class="k">)</span><span class="s2">&quot;</span>
+<span class="nb">echo</span>
+<span class="nb">echo</span> <span class="s2">&quot;t2/CSA:  &quot;</span> <span class="sb">`</span>grep -v <span class="s1">&#39;^#&#39;</span> t2/csa_mean.txt <span class="p">|</span> grep -v <span class="s1">&#39;^$&#39;</span><span class="sb">`</span>
+<span class="nb">echo</span> <span class="s2">&quot;mt/MTR:  &quot;</span> <span class="sb">`</span>grep -v <span class="s1">&#39;^#&#39;</span> mt/mtr_in_wm.txt <span class="p">|</span> grep -v <span class="s1">&#39;^$&#39;</span><span class="sb">`</span>
+<span class="nb">echo</span> <span class="s2">&quot;mt/CSA_GM:  &quot;</span> <span class="sb">`</span>grep -v <span class="s1">&#39;^#&#39;</span> mt/csa_gm/csa_mean.txt <span class="p">|</span> grep -v <span class="s1">&#39;^$&#39;</span><span class="sb">`</span>
+<span class="nb">echo</span> <span class="s2">&quot;mt/CSA_WM:  &quot;</span> <span class="sb">`</span>grep -v <span class="s1">&#39;^#&#39;</span> mt/csa_wm/csa_mean.txt <span class="p">|</span> grep -v <span class="s1">&#39;^$&#39;</span><span class="sb">`</span>
+<span class="nb">echo</span> <span class="s2">&quot;dmri/FA: &quot;</span> <span class="sb">`</span>grep -v <span class="s1">&#39;^#&#39;</span> dmri/fa_in_cst.txt <span class="p">|</span> grep -v <span class="s1">&#39;right&#39;</span><span class="sb">`</span>
+<span class="nb">echo</span> <span class="s2">&quot;dmri/FA: &quot;</span> <span class="sb">`</span>grep -v <span class="s1">&#39;^#&#39;</span> dmri/fa_in_cst.txt <span class="p">|</span> grep -v <span class="s1">&#39;left&#39;</span><span class="sb">`</span>
+<span class="nb">echo</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="course">
+<h2><a class="toc-backref" href="#id3">Course</a><a class="headerlink" href="#course" title="Permalink to this headline">¶</a></h2>
+<p>See the latest course materials <a class="reference external" href="https://osf.io/fvnjq/">here</a>.</p>
+</div>
+<div class="section" id="further-information">
+<h2><a class="toc-backref" href="#id4">Further Information</a><a class="headerlink" href="#further-information" title="Permalink to this headline">¶</a></h2>
+<p>The next step is to head to <a class="reference internal" href="command-line.html#command-line-tools"><span class="std std-ref">Command-Line Tools</span></a> and <a class="reference internal" href="api.html#python-api"><span class="std std-ref">Python API</span></a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=neuropoly&repo=spinalcordtoolbox&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">SCT Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command-line.html">Command-Line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development Notes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="installation.html" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="concepts.html" title="next chapter">SCT Concepts</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, SCT Contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/getting-started.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,702 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Python API &#8212; Spinal Cord Toolbox 3.2.2 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '3.2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Development Notes" href="development.html" />
+    <link rel="prev" title="Command-Line Tools" href="command-line.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="python-api">
+<span id="id1"></span><h1><a class="toc-backref" href="#id2">Python API</a><a class="headerlink" href="#python-api" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#python-api" id="id2">Python API</a><ul>
+<li><a class="reference internal" href="#segmentation-api" id="id3">Segmentation API</a><ul>
+<li><a class="reference internal" href="#spinal-cord-segmentation-api" id="id4">Spinal Cord Segmentation API</a><ul>
+<li><a class="reference internal" href="#module-spinalcordtoolbox.deepseg_sc.cnn_models" id="id5">deepseg_sc API</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gm-wm-segmentation-api" id="id6">GM/WM Segmentation API</a><ul>
+<li><a class="reference internal" href="#module-spinalcordtoolbox.deepseg_gm.deepseg_gm" id="id7">deepseg_gm API</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#centerline-api" id="id8">Centerline API</a><ul>
+<li><a class="reference internal" href="#module-spinalcordtoolbox.centerline.optic" id="id9">spinalcordtoolbox.centerline</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#image-processing-api" id="id10">Image Processing API</a><ul>
+<li><a class="reference internal" href="#module-spinalcordtoolbox.resample.nipy_resample" id="id11">spinalcordtoolbox.resample</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#quality-control-api" id="id12">Quality Control API</a><ul>
+<li><a class="reference internal" href="#module-spinalcordtoolbox.reports.qc" id="id13">spinalcordtoolbox.reports.qc</a></li>
+<li><a class="reference internal" href="#module-spinalcordtoolbox.reports.slice" id="id14">spinalcordtoolbox.reports.slice</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="segmentation-api">
+<h2><a class="toc-backref" href="#id3">Segmentation API</a><a class="headerlink" href="#segmentation-api" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="spinal-cord-segmentation-api">
+<h3><a class="toc-backref" href="#id4">Spinal Cord Segmentation API</a><a class="headerlink" href="#spinal-cord-segmentation-api" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="module-spinalcordtoolbox.deepseg_sc.cnn_models">
+<span id="deepseg-sc-api"></span><h4><a class="toc-backref" href="#id5">deepseg_sc API</a><a class="headerlink" href="#module-spinalcordtoolbox.deepseg_sc.cnn_models" title="Permalink to this headline">¶</a></h4>
+<p>Model.</p>
+<p>Created: 2017-12
+Last changes: 2018-01-24
+Contributors: charley</p>
+</div>
+</div>
+<div class="section" id="gm-wm-segmentation-api">
+<h3><a class="toc-backref" href="#id6">GM/WM Segmentation API</a><a class="headerlink" href="#gm-wm-segmentation-api" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="module-spinalcordtoolbox.deepseg_gm.deepseg_gm">
+<span id="deepseg-gm-api"></span><h4><a class="toc-backref" href="#id7">deepseg_gm API</a><a class="headerlink" href="#module-spinalcordtoolbox.deepseg_gm.deepseg_gm" title="Permalink to this headline">¶</a></h4>
+<dl class="class">
+<dt id="spinalcordtoolbox.deepseg_gm.deepseg_gm.CroppedRegion">
+<em class="property">class </em><code class="descclassname">spinalcordtoolbox.deepseg_gm.deepseg_gm.</code><code class="descname">CroppedRegion</code><span class="sig-paren">(</span><em>original_shape</em>, <em>starts</em>, <em>crops</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/deepseg_gm/deepseg_gm.html#CroppedRegion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.deepseg_gm.deepseg_gm.CroppedRegion" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class holds cropping information about the volume
+center crop.</p>
+<dl class="method">
+<dt id="spinalcordtoolbox.deepseg_gm.deepseg_gm.CroppedRegion.pad">
+<code class="descname">pad</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/deepseg_gm/deepseg_gm.html#CroppedRegion.pad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.deepseg_gm.deepseg_gm.CroppedRegion.pad" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will pad an image using the saved
+cropped region.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>image</strong> – the image to pad.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">padded image.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="spinalcordtoolbox.deepseg_gm.deepseg_gm.DataResource">
+<em class="property">class </em><code class="descclassname">spinalcordtoolbox.deepseg_gm.deepseg_gm.</code><code class="descname">DataResource</code><span class="sig-paren">(</span><em>dirname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/deepseg_gm/deepseg_gm.html#DataResource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.deepseg_gm.deepseg_gm.DataResource" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is responsible for resource file
+management (such as loding models).</p>
+<dl class="method">
+<dt id="spinalcordtoolbox.deepseg_gm.deepseg_gm.DataResource.get_file_path">
+<code class="descname">get_file_path</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/deepseg_gm/deepseg_gm.html#DataResource.get_file_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.deepseg_gm.deepseg_gm.DataResource.get_file_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the absolute file path based on the
+data root directory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> – the filename.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="spinalcordtoolbox.deepseg_gm.deepseg_gm.check_backend">
+<code class="descclassname">spinalcordtoolbox.deepseg_gm.deepseg_gm.</code><code class="descname">check_backend</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/deepseg_gm/deepseg_gm.html#check_backend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.deepseg_gm.deepseg_gm.check_backend" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will check for the current backend and
+then it will warn the user if the backend is theano.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spinalcordtoolbox.deepseg_gm.deepseg_gm.crop_center">
+<code class="descclassname">spinalcordtoolbox.deepseg_gm.deepseg_gm.</code><code class="descname">crop_center</code><span class="sig-paren">(</span><em>img</em>, <em>cropx</em>, <em>cropy</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/deepseg_gm/deepseg_gm.html#crop_center"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.deepseg_gm.deepseg_gm.crop_center" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will crop the center of the volume image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>img</strong> – image to be cropped.</li>
+<li><strong>cropx</strong> – x-coord of the crop.</li>
+<li><strong>cropy</strong> – y-coord of the crop.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(cropped image, cropped region)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="spinalcordtoolbox.deepseg_gm.deepseg_gm.segment_file">
+<code class="descclassname">spinalcordtoolbox.deepseg_gm.deepseg_gm.</code><code class="descname">segment_file</code><span class="sig-paren">(</span><em>input_filename</em>, <em>output_filename</em>, <em>model_name</em>, <em>verbosity</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/deepseg_gm/deepseg_gm.html#segment_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.deepseg_gm.deepseg_gm.segment_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Segment a volume file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>input_filename</strong> – the input filename.</li>
+<li><strong>output_filename</strong> – the output filename.</li>
+<li><strong>model_name</strong> – the name of model to use.</li>
+<li><strong>verbosity</strong> – the verbosity level.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">the output filename.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="spinalcordtoolbox.deepseg_gm.deepseg_gm.segment_volume">
+<code class="descclassname">spinalcordtoolbox.deepseg_gm.deepseg_gm.</code><code class="descname">segment_volume</code><span class="sig-paren">(</span><em>ninput_volume</em>, <em>model_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/deepseg_gm/deepseg_gm.html#segment_volume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.deepseg_gm.deepseg_gm.segment_volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Segment a nifti volume.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ninput_volume</strong> – the input volume.</li>
+<li><strong>model_name</strong> – the name of the model to use.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">segmented slices.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="spinalcordtoolbox.deepseg_gm.deepseg_gm.threshold_predictions">
+<code class="descclassname">spinalcordtoolbox.deepseg_gm.deepseg_gm.</code><code class="descname">threshold_predictions</code><span class="sig-paren">(</span><em>predictions</em>, <em>thr=0.999</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/deepseg_gm/deepseg_gm.html#threshold_predictions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.deepseg_gm.deepseg_gm.threshold_predictions" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will threshold predictions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>thr</strong> – the threshold.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">thresholded predictions.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<span class="target" id="module-spinalcordtoolbox.deepseg_gm.model"></span><dl class="function">
+<dt id="spinalcordtoolbox.deepseg_gm.model.dice_coef">
+<code class="descclassname">spinalcordtoolbox.deepseg_gm.model.</code><code class="descname">dice_coef</code><span class="sig-paren">(</span><em>y_true</em>, <em>y_pred</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/deepseg_gm/model.html#dice_coef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.deepseg_gm.model.dice_coef" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dice coefficient specification</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>y_true</strong> – ground truth.</li>
+<li><strong>y_pred</strong> – predictions.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="spinalcordtoolbox.deepseg_gm.model.dice_coef_loss">
+<code class="descclassname">spinalcordtoolbox.deepseg_gm.model.</code><code class="descname">dice_coef_loss</code><span class="sig-paren">(</span><em>y_true</em>, <em>y_pred</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/deepseg_gm/model.html#dice_coef_loss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.deepseg_gm.model.dice_coef_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dice loss specification.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>y_true</strong> – ground truth.</li>
+<li><strong>y_pred</strong> – predictions.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+</div>
+<div class="section" id="centerline-api">
+<h2><a class="toc-backref" href="#id8">Centerline API</a><a class="headerlink" href="#centerline-api" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-spinalcordtoolbox.centerline.optic">
+<span id="spinalcordtoolbox-centerline"></span><h3><a class="toc-backref" href="#id9">spinalcordtoolbox.centerline</a><a class="headerlink" href="#module-spinalcordtoolbox.centerline.optic" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="spinalcordtoolbox.centerline.optic.centerline2roi">
+<code class="descclassname">spinalcordtoolbox.centerline.optic.</code><code class="descname">centerline2roi</code><span class="sig-paren">(</span><em>fname_image</em>, <em>folder_output='./'</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/centerline/optic.html#centerline2roi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.centerline.optic.centerline2roi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tis method converts a binary centerline image to a .roi centerline file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname_image</strong> – filename of the binary centerline image, in RPI orientation</li>
+<li><strong>folder_output</strong> – path to output folder where to copy .roi centerline</li>
+<li><strong>verbose</strong> – adjusts the verbosity of the logging.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">filename of the .roi centerline that has been created</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="spinalcordtoolbox.centerline.optic.detect_centerline">
+<code class="descclassname">spinalcordtoolbox.centerline.optic.</code><code class="descname">detect_centerline</code><span class="sig-paren">(</span><em>image_fname</em>, <em>contrast_type</em>, <em>optic_models_path</em>, <em>folder_output</em>, <em>remove_temp_files=False</em>, <em>init_option=None</em>, <em>output_roi=False</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/centerline/optic.html#detect_centerline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.centerline.optic.detect_centerline" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will use the OptiC to detect the centerline.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>image_fname</strong> – The input image filename.</li>
+<li><strong>init_option</strong> – Axial slice where the propagation starts.</li>
+<li><strong>contrast_type</strong> – The contrast type.</li>
+<li><strong>optic_models_path</strong> – The path with the Optic model files.</li>
+<li><strong>folder_output</strong> – The OptiC output folder.</li>
+<li><strong>remove_temp_files</strong> – Remove the temporary created files.</li>
+<li><strong>verbose</strong> – Adjusts the verbosity of the logging.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The OptiC output filename.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="image-processing-api">
+<h2><a class="toc-backref" href="#id10">Image Processing API</a><a class="headerlink" href="#image-processing-api" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-spinalcordtoolbox.resample.nipy_resample">
+<span id="spinalcordtoolbox-resample"></span><h3><a class="toc-backref" href="#id11">spinalcordtoolbox.resample</a><a class="headerlink" href="#module-spinalcordtoolbox.resample.nipy_resample" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="spinalcordtoolbox.resample.nipy_resample.resample_file">
+<code class="descclassname">spinalcordtoolbox.resample.nipy_resample.</code><code class="descname">resample_file</code><span class="sig-paren">(</span><em>fname_data</em>, <em>fname_out</em>, <em>new_size</em>, <em>new_size_type</em>, <em>interpolation</em>, <em>verbose</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/resample/nipy_resample.html#resample_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.resample.nipy_resample.resample_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will resample the specified input
+image file to the target size.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fname_data</strong> – The input image filename.</li>
+<li><strong>fname_out</strong> – The output image filename.</li>
+<li><strong>new_size</strong> – The target size, i.e. 0.25x0.25</li>
+<li><strong>new_size_type</strong> – Unit of resample (mm, vox, factor)</li>
+<li><strong>interpolation</strong> – The interpolation type</li>
+<li><strong>verbose</strong> – verbosity level</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="spinalcordtoolbox.resample.nipy_resample.resample_image">
+<code class="descclassname">spinalcordtoolbox.resample.nipy_resample.</code><code class="descname">resample_image</code><span class="sig-paren">(</span><em>input_image</em>, <em>new_size</em>, <em>new_size_type</em>, <em>interpolation='linear'</em>, <em>verbose=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/resample/nipy_resample.html#resample_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.resample.nipy_resample.resample_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will resample the specified input
+image to the target size.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>input_image</strong> – The input image.</li>
+<li><strong>new_size</strong> – The target size, i.e. ‘0.25x0.25’</li>
+<li><strong>new_size_type</strong> – Unit of resample (mm, vox, factor)</li>
+<li><strong>interpolation</strong> – The interpolation type</li>
+<li><strong>verbose</strong> – Verbosity level</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The resampled image.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="quality-control-api">
+<h2><a class="toc-backref" href="#id12">Quality Control API</a><a class="headerlink" href="#quality-control-api" title="Permalink to this headline">¶</a></h2>
+<p>The modules <a class="reference internal" href="#spinalcordtoolbox-reports-qc">spinalcordtoolbox.reports.qc</a> and
+<a class="reference internal" href="#spinalcordtoolbox-reports-slice">spinalcordtoolbox.reports.slice</a> are used to generate <a class="reference internal" href="concepts.html#qc"><span class="std std-ref">Quality Control</span></a> reports.</p>
+<div class="section" id="module-spinalcordtoolbox.reports.qc">
+<span id="spinalcordtoolbox-reports-qc"></span><h3><a class="toc-backref" href="#id13">spinalcordtoolbox.reports.qc</a><a class="headerlink" href="#module-spinalcordtoolbox.reports.qc" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="spinalcordtoolbox.reports.qc.Params">
+<em class="property">class </em><code class="descclassname">spinalcordtoolbox.reports.qc.</code><code class="descname">Params</code><span class="sig-paren">(</span><em>input_file</em>, <em>command</em>, <em>args</em>, <em>orientation</em>, <em>dest_folder</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/qc.html#Params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.qc.Params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses and stores the variables that will included into the QC details</p>
+<p>We derive the value of the contrast and subject name from the <cite>input_file</cite> path,
+by splitting it into <cite>[subject]/[contrast]/input_file</cite></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="spinalcordtoolbox.reports.qc.QcImage">
+<em class="property">class </em><code class="descclassname">spinalcordtoolbox.reports.qc.</code><code class="descname">QcImage</code><span class="sig-paren">(</span><em>qc_report</em>, <em>interpolation</em>, <em>action_list</em>, <em>stretch_contrast=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/qc.html#QcImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.qc.QcImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class used to create a .png file from a 2d image produced by the class “Slice”</p>
+<dl class="method">
+<dt id="spinalcordtoolbox.reports.qc.QcImage.template">
+<code class="descname">template</code><span class="sig-paren">(</span><em>mask</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/qc.html#QcImage.template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.qc.QcImage.template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show template statistical atlas</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="spinalcordtoolbox.reports.qc.QcReport">
+<em class="property">class </em><code class="descclassname">spinalcordtoolbox.reports.qc.</code><code class="descname">QcReport</code><span class="sig-paren">(</span><em>qc_params</em>, <em>usage</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/qc.html#QcReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.qc.QcReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class generates the quality control report.</p>
+<p>It will also setup the folder structure so the report generator only needs to fetch the appropriate files.</p>
+<dl class="method">
+<dt id="spinalcordtoolbox.reports.qc.QcReport.make_content_path">
+<code class="descname">make_content_path</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/qc.html#QcReport.make_content_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.qc.QcReport.make_content_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the whole directory to contain the QC report</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">return “root folder of the report” and the “furthest folder path” containing the images</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spinalcordtoolbox.reports.qc.QcReport.update_description_file">
+<code class="descname">update_description_file</code><span class="sig-paren">(</span><em>dimension</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/qc.html#QcReport.update_description_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.qc.QcReport.update_description_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the description file with a JSON structure</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body">dimension 2-tuple, the dimension of the image frame (w, h)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="spinalcordtoolbox.reports.qc.add_entry">
+<code class="descclassname">spinalcordtoolbox.reports.qc.</code><code class="descname">add_entry</code><span class="sig-paren">(</span><em>src</em>, <em>process</em>, <em>args</em>, <em>path_qc</em>, <em>plane</em>, <em>background=None</em>, <em>foreground=None</em>, <em>qcslice=None</em>, <em>qcslice_operations=[]</em>, <em>qcslice_layout=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/qc.html#add_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.qc.add_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-spinalcordtoolbox.reports.slice">
+<span id="spinalcordtoolbox-reports-slice"></span><h3><a class="toc-backref" href="#id14">spinalcordtoolbox.reports.slice</a><a class="headerlink" href="#module-spinalcordtoolbox.reports.slice" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="spinalcordtoolbox.reports.slice.Axial">
+<em class="property">class </em><code class="descclassname">spinalcordtoolbox.reports.slice.</code><code class="descname">Axial</code><span class="sig-paren">(</span><em>images</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/slice.html#Axial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.slice.Axial" title="Permalink to this definition">¶</a></dt>
+<dd><p>The axial representation of a slice</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="spinalcordtoolbox.reports.slice.Coronal">
+<em class="property">class </em><code class="descclassname">spinalcordtoolbox.reports.slice.</code><code class="descname">Coronal</code><span class="sig-paren">(</span><em>images</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/slice.html#Coronal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.slice.Coronal" title="Permalink to this definition">¶</a></dt>
+<dd><p>The coronal representation of a slice</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="spinalcordtoolbox.reports.slice.Sagittal">
+<em class="property">class </em><code class="descclassname">spinalcordtoolbox.reports.slice.</code><code class="descname">Sagittal</code><span class="sig-paren">(</span><em>images</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/slice.html#Sagittal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.slice.Sagittal" title="Permalink to this definition">¶</a></dt>
+<dd><p>The sagittal representation of a slice</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="spinalcordtoolbox.reports.slice.Slice">
+<em class="property">class </em><code class="descclassname">spinalcordtoolbox.reports.slice.</code><code class="descname">Slice</code><span class="sig-paren">(</span><em>images</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/slice.html#Slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.slice.Slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract class representing slicing applied to &gt;=1 volumes for the purpose
+of generating ROI slices.</p>
+<p>The many volumes that are worked on are usually an original MRI volume, then
+other ones which can be processed or segmentations of the first volumes; the ROIs
+are computed on the last volume by default.</p>
+<p>For convenience, the volumes are all brought in the SAL reference frame.</p>
+<p>Functions with the suffix <cite>_slice</cite> gets a slice cut in the desired axis at the
+“i” position of the data of the 3D image. While the functions with the suffix
+<cite>_dim</cite> gets the size of the desired dimension of the 3D image.</p>
+<dl class="staticmethod">
+<dt id="spinalcordtoolbox.reports.slice.Slice.add_slice">
+<em class="property">static </em><code class="descname">add_slice</code><span class="sig-paren">(</span><em>matrix</em>, <em>i</em>, <em>column</em>, <em>size</em>, <em>patch</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/slice.html#Slice.add_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.slice.Slice.add_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a slice to the canvas containing all the slices</p>
+<p>TODO : Move this to the Axial class</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>matrix</strong> – input/output “big canvas”</li>
+<li><strong>i</strong> – slice position</li>
+<li><strong>column</strong> – number of columns in mosaic</li>
+<li><strong>size</strong> – </li>
+<li><strong>patch</strong> – patch to insert</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">matrix</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="spinalcordtoolbox.reports.slice.Slice.crop">
+<em class="property">static </em><code class="descname">crop</code><span class="sig-paren">(</span><em>matrix</em>, <em>x</em>, <em>y</em>, <em>width</em>, <em>height</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/slice.html#Slice.crop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.slice.Slice.crop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crops the matrix to width and heigth from the center</p>
+<p>Select the size of the matrix if the calulated crop <cite>width</cite> or <cite>height</cite>
+are larger then the size of the matrix.</p>
+<p>TODO : Move this into the Axial class</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>matrix</strong> – Array representation of the image</li>
+<li><strong>x</strong> – The center of the crop area in the x axis</li>
+<li><strong>y</strong> – The center of the crop area in the y axis</li>
+<li><strong>width</strong> – The width from the center</li>
+<li><strong>height</strong> – The height from the center</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">cropped matrix</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spinalcordtoolbox.reports.slice.Slice.get_dim">
+<code class="descname">get_dim</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/slice.html#Slice.get_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.slice.Slice.get_dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to obtain the depth of the 3d matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>image</strong> – input msct_image.Image</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">numpy.ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spinalcordtoolbox.reports.slice.Slice.get_name">
+<code class="descname">get_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/slice.html#Slice.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.slice.Slice.get_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the class name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spinalcordtoolbox.reports.slice.Slice.get_slice">
+<code class="descname">get_slice</code><span class="sig-paren">(</span><em>data</em>, <em>i</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/slice.html#Slice.get_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.slice.Slice.get_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to obtain a slice of a 3d matrix</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> – volume</li>
+<li><strong>i</strong> – position to slice</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">2D slice</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spinalcordtoolbox.reports.slice.Slice.mosaic">
+<code class="descname">mosaic</code><span class="sig-paren">(</span><em>nb_column=0</em>, <em>size=15</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/slice.html#Slice.mosaic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.slice.Slice.mosaic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain matrices of the mosaics</p>
+<p>Calculates how many squares will fit in a row based on the column and the size
+Multiply by 2 because the sides are of size*2. Central point is size +/-.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nb_column</strong> – number of mosaic columns</li>
+<li><strong>size</strong> – each column size</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">tuple of numpy.ndarray containing the mosaics of each slice pixels</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="spinalcordtoolbox.reports.slice.Slice.nan_fill">
+<em class="property">static </em><code class="descname">nan_fill</code><span class="sig-paren">(</span><em>A</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/slice.html#Slice.nan_fill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.slice.Slice.nan_fill" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate NaN values with neighboring values in array (in-place)
+If only NaNs, return an array of zeros.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spinalcordtoolbox.reports.slice.Slice.single">
+<code class="descname">single</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/spinalcordtoolbox/reports/slice.html#Slice.single"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spinalcordtoolbox.reports.slice.Slice.single" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain the matrices of the single slices</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">tuple of numpy.ndarray, matrix of the input 3D MRI
+containing the slices and matrix of the transformed 3D RMI
+to output containing the slices</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<p>…. autofunction:: spinalcordtoolbox.metadata</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=neuropoly&repo=spinalcordtoolbox&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">SCT Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command-line.html">Command-Line Tools</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development Notes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="command-line.html" title="previous chapter">Command-Line Tools</a></li>
+      <li>Next: <a href="development.html" title="next chapter">Development Notes</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, SCT Contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/api.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

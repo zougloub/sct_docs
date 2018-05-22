@@ -1,0 +1,276 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>spinalcordtoolbox.centerline.optic &#8212; Spinal Cord Toolbox 3.2.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '3.2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for spinalcordtoolbox.centerline.optic</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">io</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">string</span> <span class="k">import</span> <span class="n">Template</span>
+
+<span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">sct_utils</span> <span class="k">as</span> <span class="nn">sct</span>
+<span class="kn">import</span> <span class="nn">sct_image</span>
+<span class="kn">from</span> <span class="nn">sct_image</span> <span class="k">import</span> <span class="n">orientation</span>
+<span class="kn">from</span> <span class="nn">msct_image</span> <span class="k">import</span> <span class="n">Image</span>
+
+
+
+<div class="viewcode-block" id="centerline2roi"><a class="viewcode-back" href="../../../api.html#spinalcordtoolbox.centerline.optic.centerline2roi">[docs]</a><span class="k">def</span> <span class="nf">centerline2roi</span><span class="p">(</span><span class="n">fname_image</span><span class="p">,</span> <span class="n">folder_output</span><span class="o">=</span><span class="s1">&#39;./&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tis method converts a binary centerline image to a .roi centerline file</span>
+
+<span class="sd">    :param fname_image: filename of the binary centerline image, in RPI orientation</span>
+<span class="sd">    :param folder_output: path to output folder where to copy .roi centerline</span>
+<span class="sd">    :param verbose: adjusts the verbosity of the logging.</span>
+<span class="sd">    :returns: filename of the .roi centerline that has been created</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path_data</span><span class="p">,</span> <span class="n">file_data</span><span class="p">,</span> <span class="n">ext_data</span> <span class="o">=</span> <span class="n">sct</span><span class="o">.</span><span class="n">extract_fname</span><span class="p">(</span><span class="n">fname_image</span><span class="p">)</span>
+    <span class="n">fname_output</span> <span class="o">=</span> <span class="n">file_data</span> <span class="o">+</span> <span class="s1">&#39;.roi&#39;</span>
+
+    <span class="n">date_now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">ROI_TEMPLATE</span> <span class="o">=</span> <span class="s1">&#39;Begin Marker ROI</span><span class="se">\n</span><span class="s1">&#39;</span> \
+                   <span class="s1">&#39;  Build version=&quot;7.0_33&quot;</span><span class="se">\n</span><span class="s1">&#39;</span> \
+                   <span class="s1">&#39;  Annotation=&quot;&quot;</span><span class="se">\n</span><span class="s1">&#39;</span> \
+                   <span class="s1">&#39;  Colour=0</span><span class="se">\n</span><span class="s1">&#39;</span> \
+                   <span class="s1">&#39;  Image source=&quot;</span><span class="si">{fname_segmentation}</span><span class="s1">&quot;</span><span class="se">\n</span><span class="s1">&#39;</span> \
+                   <span class="s1">&#39;  Created  &quot;</span><span class="si">{creation_date}</span><span class="s1">&quot; by Operator ID=&quot;SCT&quot;</span><span class="se">\n</span><span class="s1">&#39;</span> \
+                   <span class="s1">&#39;  Slice=</span><span class="si">{slice_num}</span><span class="se">\n</span><span class="s1">&#39;</span> \
+                   <span class="s1">&#39;  Begin Shape</span><span class="se">\n</span><span class="s1">&#39;</span> \
+                   <span class="s1">&#39;    X=</span><span class="si">{position_x}</span><span class="s1">; Y=</span><span class="si">{position_y}</span><span class="se">\n</span><span class="s1">&#39;</span> \
+                   <span class="s1">&#39;  End Shape</span><span class="se">\n</span><span class="s1">&#39;</span> \
+                   <span class="s1">&#39;End Marker ROI</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+    <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="p">(</span><span class="n">fname_image</span><span class="p">)</span>
+    <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">nt</span><span class="p">,</span> <span class="n">px</span><span class="p">,</span> <span class="n">py</span><span class="p">,</span> <span class="n">pz</span><span class="p">,</span> <span class="n">pt</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">dim</span>
+    <span class="n">coordinates_centerline</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">getNonZeroCoordinates</span><span class="p">(</span><span class="n">sorting</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">)</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname_output</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">sct</span><span class="o">.</span><span class="n">printv</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Writing ROI file...&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="n">coordinates_centerline</span><span class="p">:</span>
+        <span class="n">coord_phys_center</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">transfo_pix2phys</span><span class="p">([[(</span><span class="n">nx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="p">(</span><span class="n">ny</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">coord</span><span class="o">.</span><span class="n">z</span><span class="p">]])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">coord_phys</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">transfo_pix2phys</span><span class="p">([[</span><span class="n">coord</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">coord</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">coord</span><span class="o">.</span><span class="n">z</span><span class="p">]])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ROI_TEMPLATE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname_segmentation</span><span class="o">=</span><span class="n">fname_image</span><span class="p">,</span>
+                                    <span class="n">creation_date</span><span class="o">=</span><span class="n">date_now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> %B %Y %H:%M:%S.</span><span class="si">%f</span><span class="s2"> %Z&quot;</span><span class="p">),</span>
+                                    <span class="n">slice_num</span><span class="o">=</span><span class="n">coord</span><span class="o">.</span><span class="n">z</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                                    <span class="n">position_x</span><span class="o">=</span><span class="n">coord_phys_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">coord_phys</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                    <span class="n">position_y</span><span class="o">=</span><span class="n">coord_phys_center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">coord_phys</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">folder_output</span><span class="p">)</span> <span class="o">!=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">():</span>
+        <span class="n">sct</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">fname_output</span><span class="p">,</span> <span class="n">folder_output</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fname_output</span></div>
+
+
+<div class="viewcode-block" id="detect_centerline"><a class="viewcode-back" href="../../../api.html#spinalcordtoolbox.centerline.optic.detect_centerline">[docs]</a><span class="k">def</span> <span class="nf">detect_centerline</span><span class="p">(</span><span class="n">image_fname</span><span class="p">,</span> <span class="n">contrast_type</span><span class="p">,</span>
+                      <span class="n">optic_models_path</span><span class="p">,</span> <span class="n">folder_output</span><span class="p">,</span>
+                      <span class="n">remove_temp_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">init_option</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_roi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This method will use the OptiC to detect the centerline.</span>
+
+<span class="sd">    :param image_fname: The input image filename.</span>
+<span class="sd">    :param init_option: Axial slice where the propagation starts.</span>
+<span class="sd">    :param contrast_type: The contrast type.</span>
+<span class="sd">    :param optic_models_path: The path with the Optic model files.</span>
+<span class="sd">    :param folder_output: The OptiC output folder.</span>
+<span class="sd">    :param remove_temp_files: Remove the temporary created files.</span>
+<span class="sd">    :param verbose: Adjusts the verbosity of the logging.</span>
+
+<span class="sd">    :returns: The OptiC output filename.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">image_input</span> <span class="o">=</span> <span class="n">Image</span><span class="p">(</span><span class="n">image_fname</span><span class="p">)</span>
+    <span class="n">path_data</span><span class="p">,</span> <span class="n">file_data</span><span class="p">,</span> <span class="n">ext_data</span> <span class="o">=</span> <span class="n">sct</span><span class="o">.</span><span class="n">extract_fname</span><span class="p">(</span><span class="n">image_fname</span><span class="p">)</span>
+
+    <span class="n">sct</span><span class="o">.</span><span class="n">printv</span><span class="p">(</span><span class="s1">&#39;Detecting the spinal cord using OptiC&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">image_input_orientation</span> <span class="o">=</span> <span class="n">orientation</span><span class="p">(</span><span class="n">image_input</span><span class="p">,</span> <span class="n">get</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">temp_folder</span> <span class="o">=</span> <span class="n">sct</span><span class="o">.</span><span class="n">TempFolder</span><span class="p">()</span>
+    <span class="n">temp_folder</span><span class="o">.</span><span class="n">copy_from</span><span class="p">(</span><span class="n">image_fname</span><span class="p">)</span>
+    <span class="n">curdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="n">temp_folder</span><span class="o">.</span><span class="n">chdir</span><span class="p">()</span>
+
+    <span class="c1"># convert image data type to int16, as required by opencv (backend in OptiC)</span>
+    <span class="n">image_int_filename</span> <span class="o">=</span> <span class="n">sct</span><span class="o">.</span><span class="n">add_suffix</span><span class="p">(</span><span class="n">file_data</span> <span class="o">+</span> <span class="n">ext_data</span><span class="p">,</span> <span class="s2">&quot;_int16&quot;</span><span class="p">)</span>
+    <span class="n">sct_image</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;-i&#39;</span><span class="p">,</span> <span class="n">image_fname</span><span class="p">,</span> <span class="s1">&#39;-type&#39;</span><span class="p">,</span> <span class="s1">&#39;int16&#39;</span><span class="p">,</span> <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="n">image_int_filename</span><span class="p">,</span> <span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">])</span>
+
+    <span class="c1"># reorient the input image to RPI + convert to .nii</span>
+    <span class="n">reoriented_image_filename</span> <span class="o">=</span> <span class="n">sct</span><span class="o">.</span><span class="n">add_suffix</span><span class="p">(</span><span class="n">image_int_filename</span><span class="p">,</span> <span class="s2">&quot;_RPI&quot;</span><span class="p">)</span>
+    <span class="n">img_filename</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sct</span><span class="o">.</span><span class="n">extract_fname</span><span class="p">(</span><span class="n">reoriented_image_filename</span><span class="p">)[:</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">reoriented_image_filename_nii</span> <span class="o">=</span> <span class="n">img_filename</span> <span class="o">+</span> <span class="s1">&#39;.nii&#39;</span>
+    <span class="n">cmd_reorient</span> <span class="o">=</span> <span class="s1">&#39;sct_image -i &quot;</span><span class="si">%s</span><span class="s1">&quot; -o &quot;</span><span class="si">%s</span><span class="s1">&quot; -setorient RPI -v 0&#39;</span> <span class="o">%</span> \
+                <span class="p">(</span><span class="n">image_int_filename</span><span class="p">,</span> <span class="n">reoriented_image_filename_nii</span><span class="p">)</span>
+    <span class="n">sct</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd_reorient</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">image_rpi_init</span> <span class="o">=</span> <span class="n">Image</span><span class="p">(</span><span class="n">reoriented_image_filename_nii</span><span class="p">)</span>
+    <span class="n">nxr</span><span class="p">,</span> <span class="n">nyr</span><span class="p">,</span> <span class="n">nzr</span><span class="p">,</span> <span class="n">ntr</span><span class="p">,</span> <span class="n">pxr</span><span class="p">,</span> <span class="n">pyr</span><span class="p">,</span> <span class="n">pzr</span><span class="p">,</span> <span class="n">ptr</span> <span class="o">=</span> <span class="n">image_rpi_init</span><span class="o">.</span><span class="n">dim</span>
+    <span class="k">if</span> <span class="n">init_option</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">init_option</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">init_option</span> <span class="o">/=</span> <span class="p">(</span><span class="n">nzr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># call the OptiC method to generate the spinal cord centerline</span>
+    <span class="n">optic_input</span> <span class="o">=</span> <span class="n">img_filename</span>
+    <span class="n">optic_filename</span> <span class="o">=</span> <span class="n">img_filename</span> <span class="o">+</span> <span class="s1">&#39;_optic&#39;</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;FSLOUTPUTTYPE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;NIFTI_PAIR&quot;</span>
+    <span class="n">cmd_optic</span> <span class="o">=</span> <span class="s1">&#39;isct_spine_detect -ctype=dpdt -lambda=1 &quot;</span><span class="si">%s</span><span class="s1">&quot; &quot;</span><span class="si">%s</span><span class="s1">&quot; &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> \
+                <span class="p">(</span><span class="n">optic_models_path</span><span class="p">,</span> <span class="n">optic_input</span><span class="p">,</span> <span class="n">optic_filename</span><span class="p">)</span>
+    <span class="n">sct</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd_optic</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># convert .img and .hdr files to .nii.gz</span>
+    <span class="n">optic_hdr_filename</span> <span class="o">=</span> <span class="n">img_filename</span> <span class="o">+</span> <span class="s1">&#39;_optic_ctr.hdr&#39;</span>
+    <span class="n">centerline_optic_RPI_filename</span> <span class="o">=</span> <span class="n">sct</span><span class="o">.</span><span class="n">add_suffix</span><span class="p">(</span><span class="n">file_data</span> <span class="o">+</span> <span class="n">ext_data</span><span class="p">,</span>
+                                                   <span class="s2">&quot;_centerline_optic_RPI&quot;</span><span class="p">)</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">optic_hdr_filename</span><span class="p">)</span>
+    <span class="n">nib</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">centerline_optic_RPI_filename</span><span class="p">)</span>
+
+    <span class="c1"># reorient the output image to initial orientation</span>
+    <span class="n">centerline_optic_filename</span> <span class="o">=</span> <span class="n">sct</span><span class="o">.</span><span class="n">add_suffix</span><span class="p">(</span><span class="n">file_data</span> <span class="o">+</span> <span class="n">ext_data</span><span class="p">,</span> <span class="s2">&quot;_centerline_optic&quot;</span><span class="p">)</span>
+    <span class="n">cmd_reorient</span> <span class="o">=</span> <span class="s1">&#39;sct_image -i &quot;</span><span class="si">%s</span><span class="s1">&quot; -o &quot;</span><span class="si">%s</span><span class="s1">&quot; -setorient &quot;</span><span class="si">%s</span><span class="s1">&quot; -v 0&#39;</span> <span class="o">%</span> \
+                   <span class="p">(</span><span class="n">centerline_optic_RPI_filename</span><span class="p">,</span>
+                    <span class="n">centerline_optic_filename</span><span class="p">,</span>
+                    <span class="n">image_input_orientation</span><span class="p">)</span>
+    <span class="n">sct</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd_reorient</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># copy centerline to parent folder</span>
+    <span class="n">folder_output_from_temp</span> <span class="o">=</span> <span class="n">folder_output</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">folder_output</span><span class="p">):</span>
+        <span class="n">folder_output_from_temp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curdir</span><span class="p">,</span> <span class="n">folder_output</span><span class="p">)</span>
+
+    <span class="n">sct</span><span class="o">.</span><span class="n">printv</span><span class="p">(</span><span class="s1">&#39;Copy output to &#39;</span> <span class="o">+</span> <span class="n">folder_output</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">sct</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">centerline_optic_filename</span><span class="p">,</span> <span class="n">folder_output_from_temp</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">output_roi</span><span class="p">:</span>
+        <span class="n">fname_roi_centerline</span> <span class="o">=</span> <span class="n">centerline2roi</span><span class="p">(</span><span class="n">fname_image</span><span class="o">=</span><span class="n">centerline_optic_RPI_filename</span><span class="p">,</span>
+                                              <span class="n">folder_output</span><span class="o">=</span><span class="n">folder_output_from_temp</span><span class="p">,</span>
+                                              <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="c1"># Note: the .roi file is defined in RPI orientation. To be used, it must be applied on the original image with</span>
+        <span class="c1"># a RPI orientation. For this reason, this script also outputs the input image in RPI orientation</span>
+        <span class="n">sct</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">reoriented_image_filename_nii</span><span class="p">,</span> <span class="n">folder_output_from_temp</span><span class="p">)</span>
+
+    <span class="c1"># return to initial folder</span>
+    <span class="n">temp_folder</span><span class="o">.</span><span class="n">chdir_undo</span><span class="p">()</span>
+
+    <span class="c1"># delete temporary folder</span>
+    <span class="k">if</span> <span class="n">remove_temp_files</span><span class="p">:</span>
+        <span class="n">temp_folder</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">init_option</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder_output</span><span class="p">,</span> <span class="n">centerline_optic_filename</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=neuropoly&repo=spinalcordtoolbox&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../concepts.html">SCT Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../support.html">Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../command-line.html">Command-Line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../development.html">Development Notes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, SCT Contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

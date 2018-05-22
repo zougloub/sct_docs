@@ -1,0 +1,289 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>spinalcordtoolbox.resample.nipy_resample &#8212; Spinal Cord Toolbox 3.2.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '3.2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for spinalcordtoolbox.resample.nipy_resample</h1><div class="highlight"><pre>
+<span></span><span class="c1">#########################################################################################</span>
+<span class="c1">#</span>
+<span class="c1"># Resample data using nipy.</span>
+<span class="c1">#</span>
+<span class="c1"># ---------------------------------------------------------------------------------------</span>
+<span class="c1"># Copyright (c) 2014 Polytechnique Montreal &lt;www.neuro.polymtl.ca&gt;</span>
+<span class="c1"># Authors: Julien Cohen-Adad, Sara Dupont</span>
+<span class="c1">#</span>
+<span class="c1"># About the license: see the file LICENSE.TXT</span>
+<span class="c1">#########################################################################################</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="kn">import</span> <span class="nn">nipy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">nipy.algorithms.registration.resample</span> <span class="k">import</span> <span class="n">resample</span> <span class="k">as</span> <span class="n">n_resample</span>
+
+<span class="kn">import</span> <span class="nn">sct_utils</span> <span class="k">as</span> <span class="nn">sct</span>
+
+
+<div class="viewcode-block" id="resample_image"><a class="viewcode-back" href="../../../api.html#spinalcordtoolbox.resample.nipy_resample.resample_image">[docs]</a><span class="k">def</span> <span class="nf">resample_image</span><span class="p">(</span><span class="n">input_image</span><span class="p">,</span> <span class="n">new_size</span><span class="p">,</span> <span class="n">new_size_type</span><span class="p">,</span>
+                   <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This function will resample the specified input</span>
+<span class="sd">    image to the target size.</span>
+
+<span class="sd">    :param input_image: The input image.</span>
+<span class="sd">    :param new_size: The target size, i.e. &#39;0.25x0.25&#39;</span>
+<span class="sd">    :param new_size_type: Unit of resample (mm, vox, factor)</span>
+<span class="sd">    :param interpolation: The interpolation type</span>
+<span class="sd">    :param verbose: Verbosity level</span>
+<span class="sd">    :return: The resampled image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">input_image</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+    <span class="c1"># Get dimensions of data</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">input_image</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">get_zooms</span><span class="p">()</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">input_image</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">get_data_shape</span><span class="p">()</span>
+    <span class="n">sct</span><span class="o">.</span><span class="n">printv</span><span class="p">(</span><span class="s1">&#39;  pixdim: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="n">sct</span><span class="o">.</span><span class="n">printv</span><span class="p">(</span><span class="s1">&#39;  shape: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># Calculate new dimensions</span>
+    <span class="n">sct</span><span class="o">.</span><span class="n">printv</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Calculate new dimensions...&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="c1"># parse input argument</span>
+    <span class="n">new_size</span> <span class="o">=</span> <span class="n">new_size</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+    <span class="c1"># if 4d, add resampling factor to 4th dimension</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">new_size</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+    <span class="c1"># compute new shape based on specific resampling method</span>
+    <span class="k">if</span> <span class="n">new_size_type</span> <span class="o">==</span> <span class="s1">&#39;vox&#39;</span><span class="p">:</span>
+        <span class="n">n_r</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">new_size</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">))])</span>
+    <span class="k">elif</span> <span class="n">new_size_type</span> <span class="o">==</span> <span class="s1">&#39;factor&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_size</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># isotropic resampling</span>
+            <span class="n">new_size</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">new_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">))])</span>
+        <span class="c1"># compute new shape as: n_r = n * f</span>
+        <span class="n">n_r</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">new_size</span><span class="p">[</span><span class="n">i</span><span class="p">])))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">))])</span>
+    <span class="k">elif</span> <span class="n">new_size_type</span> <span class="o">==</span> <span class="s1">&#39;mm&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_size</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># isotropic resampling</span>
+            <span class="n">new_size</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">new_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">))])</span>
+        <span class="c1"># compute new shape as: n_r = n * (p_r / p)</span>
+        <span class="n">n_r</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">new_size</span><span class="p">[</span><span class="n">i</span><span class="p">])))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">))])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sct</span><span class="o">.</span><span class="n">printv</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">ERROR: new_size_type is not recognized.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span>
+    <span class="n">sct</span><span class="o">.</span><span class="n">printv</span><span class="p">(</span><span class="s1">&#39;  new shape: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_r</span><span class="p">),</span> <span class="n">verbose</span><span class="p">)</span>
+
+    <span class="n">affine</span> <span class="o">=</span> <span class="n">input_image</span><span class="o">.</span><span class="n">coordmap</span><span class="o">.</span><span class="n">affine</span>
+    <span class="n">sct</span><span class="o">.</span><span class="n">printv</span><span class="p">(</span><span class="s1">&#39;  affine matrix: </span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">affine</span><span class="p">),</span> <span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># create ref image</span>
+    <span class="n">arr_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_r</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">)):</span>
+        <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_r</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">affine_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">affine</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span>
+    <span class="n">coordmap_r</span> <span class="o">=</span> <span class="n">input_image</span><span class="o">.</span><span class="n">coordmap</span>
+    <span class="n">coordmap_r</span><span class="o">.</span><span class="n">affine</span> <span class="o">=</span> <span class="n">affine_r</span>
+    <span class="n">nii_r</span> <span class="o">=</span> <span class="n">nipy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">arr_r</span><span class="p">,</span> <span class="n">coordmap_r</span><span class="p">)</span>
+
+    <span class="n">sct</span><span class="o">.</span><span class="n">printv</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Calculate affine transformation...&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="c1"># create affine transformation</span>
+    <span class="n">transfo</span> <span class="o">=</span> <span class="n">R</span>
+    <span class="c1"># if data are 4d, delete temporal dimension</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">transfo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">transfo</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">transfo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">transfo</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># translate to account for voxel size (otherwise resulting image will be shifted by half a voxel). Modify the three first rows of the last column, corresponding to the translation.</span>
+    <span class="n">transfo</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(((</span><span class="n">R</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f8&#39;</span><span class="p">)</span>
+    <span class="n">sct</span><span class="o">.</span><span class="n">printv</span><span class="p">(</span><span class="s1">&#39;  transfo: </span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">transfo</span><span class="p">),</span> <span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># set interpolation method</span>
+    <span class="k">if</span> <span class="n">interpolation</span> <span class="o">==</span> <span class="s1">&#39;nn&#39;</span><span class="p">:</span>
+        <span class="n">interp_order</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="n">interpolation</span> <span class="o">==</span> <span class="s1">&#39;linear&#39;</span><span class="p">:</span>
+        <span class="n">interp_order</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="n">interpolation</span> <span class="o">==</span> <span class="s1">&#39;spline&#39;</span><span class="p">:</span>
+        <span class="n">interp_order</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="c1"># create 3d coordmap because resample only accepts 3d data (jcohenadad 2016-07-26)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">coordmap3d</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">input_image</span><span class="o">.</span><span class="n">coordmap</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">nipy.core.reference.coordinate_system</span> <span class="k">import</span> <span class="n">CoordinateSystem</span>
+        <span class="n">coordmap3d</span><span class="o">.</span><span class="n">function_domain</span> <span class="o">=</span> <span class="n">CoordinateSystem</span><span class="p">(</span><span class="s1">&#39;xyz&#39;</span><span class="p">)</span>
+        <span class="c1"># create 3d affine transfo</span>
+        <span class="n">affine3d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">affine</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">affine3d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">affine3d</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">coordmap3d</span><span class="o">.</span><span class="n">affine</span> <span class="o">=</span> <span class="n">affine3d</span>
+
+    <span class="c1"># resample data</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">data_r</span> <span class="o">=</span> <span class="n">n_resample</span><span class="p">(</span><span class="n">input_image</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transfo</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="n">nii_r</span><span class="p">,</span> <span class="n">mov_voxel_coords</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                          <span class="n">ref_voxel_coords</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">,</span> <span class="n">interp_order</span><span class="o">=</span><span class="n">interp_order</span><span class="p">,</span>
+                          <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">data_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_r</span><span class="p">)</span>
+
+        <span class="c1"># loop across 4th dimension</span>
+        <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">]):</span>
+            <span class="c1"># create 3d nipy-like data</span>
+            <span class="n">arr3d</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">it</span><span class="p">]</span>
+            <span class="n">nii3d</span> <span class="o">=</span> <span class="n">nipy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">arr3d</span><span class="p">,</span> <span class="n">coordmap3d</span><span class="p">)</span>
+            <span class="n">arr_r3d</span> <span class="o">=</span> <span class="n">arr_r</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">it</span><span class="p">]</span>
+            <span class="n">nii_r3d</span> <span class="o">=</span> <span class="n">nipy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">arr_r3d</span><span class="p">,</span> <span class="n">coordmap3d</span><span class="p">)</span>
+            <span class="c1"># resample data</span>
+            <span class="n">data3d_r</span> <span class="o">=</span> <span class="n">n_resample</span><span class="p">(</span><span class="n">nii3d</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transfo</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="n">nii_r3d</span><span class="p">,</span>
+                                <span class="n">mov_voxel_coords</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ref_voxel_coords</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;double&#39;</span><span class="p">,</span> <span class="n">interp_order</span><span class="o">=</span><span class="n">interp_order</span><span class="p">,</span>
+                                <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span>
+            <span class="n">data_r</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">it</span><span class="p">]</span> <span class="o">=</span> <span class="n">data3d_r</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+
+    <span class="n">nii_r</span> <span class="o">=</span> <span class="n">nipy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">data_r</span><span class="p">,</span> <span class="n">coordmap_r</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">nii_r</span></div>
+
+
+<div class="viewcode-block" id="resample_file"><a class="viewcode-back" href="../../../api.html#spinalcordtoolbox.resample.nipy_resample.resample_file">[docs]</a><span class="k">def</span> <span class="nf">resample_file</span><span class="p">(</span><span class="n">fname_data</span><span class="p">,</span> <span class="n">fname_out</span><span class="p">,</span> <span class="n">new_size</span><span class="p">,</span> <span class="n">new_size_type</span><span class="p">,</span>
+                  <span class="n">interpolation</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This function will resample the specified input</span>
+<span class="sd">    image file to the target size.</span>
+
+<span class="sd">    :param fname_data: The input image filename.</span>
+<span class="sd">    :param fname_out: The output image filename.</span>
+<span class="sd">    :param new_size: The target size, i.e. 0.25x0.25</span>
+<span class="sd">    :param new_size_type: Unit of resample (mm, vox, factor)</span>
+<span class="sd">    :param interpolation: The interpolation type</span>
+<span class="sd">    :param verbose: verbosity level</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Load data</span>
+    <span class="n">sct</span><span class="o">.</span><span class="n">printv</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Load data...&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="n">nii</span> <span class="o">=</span> <span class="n">nipy</span><span class="o">.</span><span class="n">load_image</span><span class="p">(</span><span class="n">fname_data</span><span class="p">)</span>
+
+    <span class="n">nii_r</span> <span class="o">=</span> <span class="n">resample_image</span><span class="p">(</span><span class="n">nii</span><span class="p">,</span> <span class="n">new_size</span><span class="p">,</span> <span class="n">new_size_type</span><span class="p">,</span> 
+                           <span class="n">interpolation</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># build output file name</span>
+    <span class="k">if</span> <span class="n">fname_out</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">fname_out</span> <span class="o">=</span> <span class="n">sct</span><span class="o">.</span><span class="n">add_suffix</span><span class="p">(</span><span class="n">fname_data</span><span class="p">,</span> <span class="s1">&#39;_r&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fname_out</span> <span class="o">=</span> <span class="n">fname_out</span>
+
+    <span class="c1"># save data</span>
+    <span class="n">nipy</span><span class="o">.</span><span class="n">save_image</span><span class="p">(</span><span class="n">nii_r</span><span class="p">,</span> <span class="n">fname_out</span><span class="p">)</span>
+
+    <span class="c1"># to view results</span>
+    <span class="n">sct</span><span class="o">.</span><span class="n">printv</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Done! To view results, type:&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="n">sct</span><span class="o">.</span><span class="n">printv</span><span class="p">(</span><span class="s1">&#39;fslview &#39;</span> <span class="o">+</span> <span class="n">fname_out</span> <span class="o">+</span> <span class="s1">&#39; &amp;&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">nii_r</span></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=neuropoly&repo=spinalcordtoolbox&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../concepts.html">SCT Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../support.html">Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../command-line.html">Command-Line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../development.html">Development Notes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, SCT Contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

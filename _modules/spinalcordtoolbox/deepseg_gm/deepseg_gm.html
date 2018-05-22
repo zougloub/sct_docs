@@ -1,0 +1,375 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>spinalcordtoolbox.deepseg_gm.deepseg_gm &#8212; Spinal Cord Toolbox 3.2.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '3.2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for spinalcordtoolbox.deepseg_gm.deepseg_gm</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+<span class="c1"># This is the interface API for the deepseg_gm model</span>
+<span class="c1"># that implements the model for the Spinal Cord Gray Matter Segmentation.</span>
+<span class="c1">#</span>
+<span class="c1"># Reference paper:</span>
+<span class="c1">#     Perone, C. S., Calabrese, E., &amp; Cohen-Adad, J. (2017).</span>
+<span class="c1">#     Spinal cord gray matter segmentation using deep dilated convolutions.</span>
+<span class="c1">#     URL: https://arxiv.org/abs/1710.01269</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">io</span>
+
+<span class="kn">import</span> <span class="nn">nipy</span>
+<span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+<span class="kn">from</span> <span class="nn">nipy.io.nifti_ref</span> <span class="k">import</span> <span class="n">nipy2nifti</span><span class="p">,</span> <span class="n">nifti2nipy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Avoid Keras logging</span>
+<span class="n">original_stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">hexversion</span> <span class="o">&lt;</span> <span class="mh">0x03000000</span><span class="p">:</span>
+	<span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+	<span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">TextIOWrapper</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(),</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">encoding</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+	<span class="kn">from</span> <span class="nn">keras</span> <span class="k">import</span> <span class="n">backend</span> <span class="k">as</span> <span class="n">K</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+	<span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">original_stderr</span>
+	<span class="k">raise</span>
+<span class="k">else</span><span class="p">:</span>
+	<span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">original_stderr</span>
+
+<span class="kn">from</span> <span class="nn">spinalcordtoolbox.resample</span> <span class="k">import</span> <span class="n">nipy_resample</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">model</span>
+
+
+<span class="c1"># Suppress warnings and TensorFlow logging</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;TF_CPP_MIN_LOG_LEVEL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;3&#39;</span>
+
+
+<div class="viewcode-block" id="check_backend"><a class="viewcode-back" href="../../../api.html#spinalcordtoolbox.deepseg_gm.deepseg_gm.check_backend">[docs]</a><span class="k">def</span> <span class="nf">check_backend</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;This function will check for the current backend and</span>
+<span class="sd">    then it will warn the user if the backend is theano.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">K</span><span class="o">.</span><span class="n">backend</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;tensorflow&#39;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">WARNING: you&#39;re using a Keras backend different than</span><span class="se">\n</span><span class="s2">&quot;</span>
+              <span class="s2">&quot;Tensorflow, which is not recommended. Please verify</span><span class="se">\n</span><span class="s2">&quot;</span>
+              <span class="s2">&quot;your configuration file according to: https://keras.io/backend/</span><span class="se">\n</span><span class="s2">&quot;</span>
+              <span class="s2">&quot;to make sure you&#39;re using Tensorflow Keras backend.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">K</span><span class="o">.</span><span class="n">backend</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DataResource"><a class="viewcode-back" href="../../../api.html#spinalcordtoolbox.deepseg_gm.deepseg_gm.DataResource">[docs]</a><span class="k">class</span> <span class="nc">DataResource</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This class is responsible for resource file</span>
+<span class="sd">    management (such as loding models).&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the resource with the directory</span>
+<span class="sd">        name context.</span>
+
+<span class="sd">        :param dirname: the root directory name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path_sct</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SCT_DIR&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_sct</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">dirname</span><span class="p">))</span>
+
+<div class="viewcode-block" id="DataResource.get_file_path"><a class="viewcode-back" href="../../../api.html#spinalcordtoolbox.deepseg_gm.deepseg_gm.DataResource.get_file_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_file_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the absolute file path based on the</span>
+<span class="sd">        data root directory.</span>
+
+<span class="sd">        :param filename: the filename.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CroppedRegion"><a class="viewcode-back" href="../../../api.html#spinalcordtoolbox.deepseg_gm.deepseg_gm.CroppedRegion">[docs]</a><span class="k">class</span> <span class="nc">CroppedRegion</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This class holds cropping information about the volume</span>
+<span class="sd">    center crop.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">original_shape</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">crops</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor for the CroppedRegion.</span>
+
+<span class="sd">        :param original_shape: the original volume shape.</span>
+<span class="sd">        :param starts: crop beginning (x, y).</span>
+<span class="sd">        :param crops: the crops (x, y).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">originalx</span> <span class="o">=</span> <span class="n">original_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">originaly</span> <span class="o">=</span> <span class="n">original_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startx</span> <span class="o">=</span> <span class="n">starts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">starty</span> <span class="o">=</span> <span class="n">starts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cropx</span> <span class="o">=</span> <span class="n">crops</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cropy</span> <span class="o">=</span> <span class="n">crops</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<div class="viewcode-block" id="CroppedRegion.pad"><a class="viewcode-back" href="../../../api.html#spinalcordtoolbox.deepseg_gm.deepseg_gm.CroppedRegion.pad">[docs]</a>    <span class="k">def</span> <span class="nf">pad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method will pad an image using the saved</span>
+<span class="sd">        cropped region.</span>
+
+<span class="sd">        :param image: the image to pad.</span>
+<span class="sd">        :return: padded image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bef_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">startx</span>
+        <span class="n">aft_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">originalx</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">startx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">cropx</span><span class="p">)</span>
+
+        <span class="n">bef_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">starty</span>
+        <span class="n">aft_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">originaly</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">starty</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">cropy</span><span class="p">)</span>
+
+        <span class="n">padded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">image</span><span class="p">,</span>
+                        <span class="p">((</span><span class="n">bef_y</span><span class="p">,</span> <span class="n">aft_y</span><span class="p">),</span>
+                         <span class="p">(</span><span class="n">bef_x</span><span class="p">,</span> <span class="n">aft_x</span><span class="p">)),</span>
+                        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">padded</span></div></div>
+
+
+<div class="viewcode-block" id="crop_center"><a class="viewcode-back" href="../../../api.html#spinalcordtoolbox.deepseg_gm.deepseg_gm.crop_center">[docs]</a><span class="k">def</span> <span class="nf">crop_center</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cropx</span><span class="p">,</span> <span class="n">cropy</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This function will crop the center of the volume image.</span>
+
+<span class="sd">    :param img: image to be cropped.</span>
+<span class="sd">    :param cropx: x-coord of the crop.</span>
+<span class="sd">    :param cropy: y-coord of the crop.</span>
+<span class="sd">    :return: (cropped image, cropped region)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">startx</span> <span class="o">=</span> <span class="n">x</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">-</span> <span class="p">(</span><span class="n">cropx</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">starty</span> <span class="o">=</span> <span class="n">y</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">-</span> <span class="p">(</span><span class="n">cropy</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">startx</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">starty</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Negative crop.&quot;</span><span class="p">)</span>
+
+    <span class="n">cropped_region</span> <span class="o">=</span> <span class="n">CroppedRegion</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">startx</span><span class="p">,</span> <span class="n">starty</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="n">cropx</span><span class="p">,</span> <span class="n">cropy</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">img</span><span class="p">[</span><span class="n">starty</span><span class="p">:</span><span class="n">starty</span> <span class="o">+</span> <span class="n">cropy</span><span class="p">,</span>
+               <span class="n">startx</span><span class="p">:</span><span class="n">startx</span> <span class="o">+</span> <span class="n">cropx</span><span class="p">],</span> <span class="n">cropped_region</span></div>
+
+
+<div class="viewcode-block" id="threshold_predictions"><a class="viewcode-back" href="../../../api.html#spinalcordtoolbox.deepseg_gm.deepseg_gm.threshold_predictions">[docs]</a><span class="k">def</span> <span class="nf">threshold_predictions</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">thr</span><span class="o">=</span><span class="mf">0.999</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This method will threshold predictions.</span>
+
+<span class="sd">    :param thr: the threshold.</span>
+<span class="sd">    :return: thresholded predictions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">thresholded_preds</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[:]</span>
+    <span class="n">low_values_indices</span> <span class="o">=</span> <span class="n">thresholded_preds</span> <span class="o">&lt;=</span> <span class="n">thr</span>
+    <span class="n">thresholded_preds</span><span class="p">[</span><span class="n">low_values_indices</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">low_values_indices</span> <span class="o">=</span> <span class="n">thresholded_preds</span> <span class="o">&gt;</span> <span class="n">thr</span>
+    <span class="n">thresholded_preds</span><span class="p">[</span><span class="n">low_values_indices</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">thresholded_preds</span></div>
+
+
+<div class="viewcode-block" id="segment_volume"><a class="viewcode-back" href="../../../api.html#spinalcordtoolbox.deepseg_gm.deepseg_gm.segment_volume">[docs]</a><span class="k">def</span> <span class="nf">segment_volume</span><span class="p">(</span><span class="n">ninput_volume</span><span class="p">,</span> <span class="n">model_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Segment a nifti volume.</span>
+
+<span class="sd">    :param ninput_volume: the input volume.</span>
+<span class="sd">    :param model_name: the name of the model to use.</span>
+<span class="sd">    :return: segmented slices.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gmseg_model_challenge</span> <span class="o">=</span> <span class="n">DataResource</span><span class="p">(</span><span class="s1">&#39;deepseg_gm_models&#39;</span><span class="p">)</span>
+    <span class="n">model_path</span><span class="p">,</span> <span class="n">metadata_path</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">MODELS</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span>
+
+    <span class="n">metadata_abs_path</span> <span class="o">=</span> <span class="n">gmseg_model_challenge</span><span class="o">.</span><span class="n">get_file_path</span><span class="p">(</span><span class="n">metadata_path</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">metadata_abs_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+
+    <span class="n">deepgmseg_model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;filters&#39;</span><span class="p">])</span>
+
+    <span class="n">model_abs_path</span> <span class="o">=</span> <span class="n">gmseg_model_challenge</span><span class="o">.</span><span class="n">get_file_path</span><span class="p">(</span><span class="n">model_path</span><span class="p">)</span>
+    <span class="n">deepgmseg_model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="n">model_abs_path</span><span class="p">)</span>
+
+    <span class="n">volume_data</span> <span class="o">=</span> <span class="n">ninput_volume</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+    <span class="n">axial_slices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">crops</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">slice_num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">volume_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">volume_data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">slice_num</span><span class="p">]</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">cropreg</span> <span class="o">=</span> <span class="n">crop_center</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">CROP_HEIGHT</span><span class="p">,</span>
+                                    <span class="n">model</span><span class="o">.</span><span class="n">CROP_WIDTH</span><span class="p">)</span>
+        <span class="n">axial_slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">crops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cropreg</span><span class="p">)</span>
+
+    <span class="n">axial_slices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">axial_slices</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">axial_slices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">axial_slices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="n">axial_slices</span> <span class="o">-=</span> <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;mean_train&#39;</span><span class="p">]</span>
+    <span class="n">axial_slices</span> <span class="o">/=</span> <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;std_train&#39;</span><span class="p">]</span>
+
+    <span class="n">preds</span> <span class="o">=</span> <span class="n">deepgmseg_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">axial_slices</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+                                    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">preds</span> <span class="o">=</span> <span class="n">threshold_predictions</span><span class="p">(</span><span class="n">preds</span><span class="p">)</span>
+    <span class="n">pred_slices</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Un-cropping</span>
+    <span class="k">for</span> <span class="n">slice_num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">preds</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">pred_slice</span> <span class="o">=</span> <span class="n">preds</span><span class="p">[</span><span class="n">slice_num</span><span class="p">][</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">pred_slice</span> <span class="o">=</span> <span class="n">crops</span><span class="p">[</span><span class="n">slice_num</span><span class="p">]</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">pred_slice</span><span class="p">)</span>
+        <span class="n">pred_slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pred_slice</span><span class="p">)</span>
+
+    <span class="n">pred_slices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">pred_slices</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+    <span class="n">pred_slices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">pred_slices</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">pred_slices</span></div>
+
+
+<div class="viewcode-block" id="segment_file"><a class="viewcode-back" href="../../../api.html#spinalcordtoolbox.deepseg_gm.deepseg_gm.segment_file">[docs]</a><span class="k">def</span> <span class="nf">segment_file</span><span class="p">(</span><span class="n">input_filename</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">,</span>
+                 <span class="n">model_name</span><span class="p">,</span> <span class="n">verbosity</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Segment a volume file.</span>
+
+<span class="sd">    :param input_filename: the input filename.</span>
+<span class="sd">    :param output_filename: the output filename.</span>
+<span class="sd">    :param model_name: the name of model to use.</span>
+<span class="sd">    :param verbosity: the verbosity level.</span>
+<span class="sd">    :return: the output filename.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nii_original</span> <span class="o">=</span> <span class="n">nipy</span><span class="o">.</span><span class="n">load_image</span><span class="p">(</span><span class="n">input_filename</span><span class="p">)</span>
+    <span class="n">pixdim</span> <span class="o">=</span> <span class="n">nii_original</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;pixdim&quot;</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">target_resample</span> <span class="o">=</span> <span class="s2">&quot;0.25x0.25x</span><span class="si">{:.5f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pixdim</span><span class="p">)</span>
+
+    <span class="n">nii_resampled</span> <span class="o">=</span> <span class="n">nipy_resample</span><span class="o">.</span><span class="n">resample_image</span><span class="p">(</span><span class="n">nii_original</span><span class="p">,</span>
+                                                 <span class="n">target_resample</span><span class="p">,</span>
+                                                 <span class="s1">&#39;mm&#39;</span><span class="p">,</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span>
+                                                 <span class="n">verbosity</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">nii_resampled</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">200</span><span class="p">)</span> \
+       <span class="ow">or</span> <span class="p">(</span><span class="n">nii_resampled</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">200</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Image too small (</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                           <span class="n">nii_resampled</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                           <span class="n">nii_resampled</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="n">nii_resampled</span> <span class="o">=</span> <span class="n">nipy2nifti</span><span class="p">(</span><span class="n">nii_resampled</span><span class="p">)</span>
+    <span class="n">pred_slices</span> <span class="o">=</span> <span class="n">segment_volume</span><span class="p">(</span><span class="n">nii_resampled</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
+
+    <span class="n">original_res</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:.5f}</span><span class="s2">x</span><span class="si">{:.5f}</span><span class="s2">x</span><span class="si">{:.5f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">nii_original</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;pixdim&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">nii_original</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;pixdim&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span>
+        <span class="n">nii_original</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;pixdim&quot;</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span>
+
+    <span class="n">volume_affine</span> <span class="o">=</span> <span class="n">nii_resampled</span><span class="o">.</span><span class="n">affine</span>
+    <span class="n">volume_header</span> <span class="o">=</span> <span class="n">nii_resampled</span><span class="o">.</span><span class="n">header</span>
+    <span class="n">nii_segmentation</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">pred_slices</span><span class="p">,</span> <span class="n">volume_affine</span><span class="p">,</span>
+                                       <span class="n">volume_header</span><span class="p">)</span>
+    <span class="n">nii_segmentation</span> <span class="o">=</span> <span class="n">nifti2nipy</span><span class="p">(</span><span class="n">nii_segmentation</span><span class="p">)</span>
+
+    <span class="n">nii_resampled_original</span> <span class="o">=</span> <span class="n">nipy_resample</span><span class="o">.</span><span class="n">resample_image</span><span class="p">(</span><span class="n">nii_segmentation</span><span class="p">,</span>
+                                                          <span class="n">original_res</span><span class="p">,</span>
+                                                          <span class="s1">&#39;mm&#39;</span><span class="p">,</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span>
+                                                          <span class="n">verbosity</span><span class="p">)</span>
+
+    <span class="n">res_data</span> <span class="o">=</span> <span class="n">nii_resampled_original</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+    <span class="n">res_data</span> <span class="o">=</span> <span class="n">threshold_predictions</span><span class="p">(</span><span class="n">res_data</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="n">nipy</span><span class="o">.</span><span class="n">save_image</span><span class="p">(</span><span class="n">nii_resampled_original</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output_filename</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=neuropoly&repo=spinalcordtoolbox&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../concepts.html">SCT Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../support.html">Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../command-line.html">Command-Line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../development.html">Development Notes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, SCT Contributors.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
